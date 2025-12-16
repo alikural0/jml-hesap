@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JML Dış Ticaret</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0b0b0c">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+
+  <style>
+    :root{
+      --bg: #0b0b0c;
+      --panel: #121214;
+      --panel2: #16161a;
+      --stroke: rgba(255,255,255,.10);
+      --stroke2: rgba(255,255,255,.16);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.62);
+      --muted2: rgba(255,255,255,.45);
+      --shadow: 0 18px 55px rgba(0,0,0,.55);
+      --r: 18px;
+
+      --key: rgba(255,255,255,.06);
+      --keyHover: rgba(255,255,255,.09);
+      --danger: rgba(255,255,255,.10);
+      --accent: rgba(255,255,255,.12);
+      --good: rgba(255,255,255,.16);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 600px at 20% 15%, rgba(255,255,255,.06), transparent 60%),
+        radial-gradient(900px 600px at 80% 85%, rgba(255,255,255,.05), transparent 60%),
+        linear-gradient(180deg, var(--bg), #070708);
+      color:var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      display:flex;
+      justify-content:center;
+      padding:22px 12px;
+    }
+
+    .wrap{ width:min(460px, 100%); display:flex; flex-direction:column; gap:12px; }
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:14px;
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border:1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand{
+      display:flex; align-items:center; gap:12px; min-width:0;
+    }
+    .brand img{
+      height:40px; width:auto;
+      background: rgba(255,255,255,.88);
+      border-radius:12px;
+      padding:6px 8px;
+      border:1px solid rgba(0,0,0,.08);
+      box-shadow: 0 10px 28px rgba(0,0,0,.35);
+      flex:0 0 auto;
+    }
+    .brand .text{ display:flex; flex-direction:column; min-width:0; }
+    .brand b{
+      font-size:14px;
+      letter-spacing:.9px;
+      font-weight:800;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .brand span{
+      margin-top:3px;
+      font-size:11px;
+      letter-spacing:1.1px;
+      text-transform:uppercase;
+      color: var(--muted2);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .right{
+      display:flex; align-items:center; gap:10px;
+    }
+    .chip{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+      user-select:none;
+    }
+    .sel{
+      height:34px;
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      border:1px solid var(--stroke);
+      color: var(--text);
+      padding:0 10px;
+      outline:none;
+      cursor:pointer;
+      font-size:12px;
+    }
+
+    .card{
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      padding:10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .tab{
+      flex:1;
+      height:40px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      cursor:pointer;
+      font-size:13px;
+      transition: .12s transform, .12s background, .12s color, .12s border-color;
+    }
+    .tab:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); color: var(--text); border-color: rgba(255,255,255,.14); }
+    .tab.active{ background: rgba(255,255,255,.10); color: var(--text); border-color: rgba(255,255,255,.18); }
+
+    .panel{ display:none; padding:14px; }
+    .panel.active{ display:block; }
+
+    .screen{
+      width:100%;
+      height:76px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.32);
+      color: var(--text);
+      padding:12px 14px;
+      text-align:right;
+      font-size:30px;
+      outline:none;
+    }
+    .subline{
+      margin-top:8px;
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:10px;
+      font-size:12px;
+      color: var(--muted2);
+    }
+
+    .grid{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+      touch-action: manipulation;
+      user-select:none;
+    }
+
+    button.key{
+      height:56px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: var(--key);
+      color: var(--text);
+      font-size:18px;
+      cursor:pointer;
+      transition: .10s transform, .10s background, .10s border-color;
+    }
+    button.key:hover{ transform: translateY(-1px); background: var(--keyHover); border-color: rgba(255,255,255,.16); }
+    button.key:active{ transform: translateY(0px) scale(.99); }
+
+    .op{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.14); }
+    .danger{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.14); }
+    .good{ background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.20); }
+    .wide{ grid-column: span 2; }
+    .eq{ grid-column: span 2; }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .field{
+      flex:1;
+      min-width: 140px;
+      height:44px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.26);
+      color: var(--text);
+      padding:0 12px;
+      outline:none;
+    }
+    .btn{
+      height:44px;
+      padding:0 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      cursor:pointer;
+      transition: .10s transform, .10s background;
+      font-size:13px;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.07); }
+    .btn:active{ transform: translateY(0px) scale(.99); }
+
+    .out{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.24);
+      font-size:13px;
+      color: rgba(255,255,255,.86);
+      line-height:1.45;
+      word-break: break-word;
+    }
+    .out b{ color: var(--text); }
+
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      color: var(--muted2);
+      line-height:1.45;
+    }
+
+    @media (max-width: 420px){
+      .brand img{ height:36px; }
+      .chip{ display:none; }
+      .screen{ font-size:26px; height:72px; }
+      button.key{ height:54px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="topbar">
+      <div class="brand">
+        <img src="logo.png" alt="JML Dış Ticaret">
+        <div class="text">
+          <b>JML DIŞ TİCARET</b>
+          <span>HESAP • KDV • YÜZDE • KAR/ZARAR</span>
+        </div>
+      </div>
+
+      <div class="right">
+        <select id="currency" class="sel" title="Para birimi">
+          <option value="TRY" selected>₺ TL</option>
+          <option value="USD">$ USD</option>
+        </select>
+        <div class="chip">Mobil: Dokun • Enter: =</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="calc" type="button">Hesap</button>
+        <button class="tab" data-tab="kdv" type="button">KDV</button>
+        <button class="tab" data-tab="pct" type="button">Yüzde</button>
+        <button class="tab" data-tab="profit" type="button">Kar/Zarar</button>
+      </div>
+
+      <!-- HESAP -->
+      <div class="panel active" id="panel-calc">
+        <input id="screen" class="screen" value="0" readonly />
+        <div class="subline">
+          <span>⌫ Backspace • C Esc</span>
+          <span id="miniInfo">—</span>
+        </div>
+
+        <div class="grid" id="grid">
+          <button class="key danger" data-action="clear" type="button">C</button>
+          <button class="key danger" data-action="back" type="button">⌫</button>
+          <button class="key op" data-value="%" type="button">%</button>
+          <button class="key op" data-value="/" type="button">÷</button>
+
+          <button class="key" data-value="7" type="button">7</button>
+          <button class="key" data-value="8" type="button">8</button>
+          <button class="key" data-value="9" type="button">9</button>
+          <button class="key op" data-value="*" type="button">×</button>
+
+          <button class="key" data-value="4" type="button">4</button>
+          <button class="key" data-value="5" type="button">5</button>
+          <button class="key" data-value="6" type="button">6</button>
+          <button class="key op" data-value="-" type="button">−</button>
+
+          <button class="key" data-value="1" type="button">1</button>
+          <button class="key" data-value="2" type="button">2</button>
+          <button class="key" data-value="3" type="button">3</button>
+          <button class="key op" data-value="+" type="button">+</button>
+
+          <button class="key wide" data-value="0" type="button">0</button>
+          <button class="key" data-value="." type="button">.</button>
+          <button class="key good eq" data-action="equals" type="button">=</button>
+        </div>
+
+        <div class="hint">
+          Binlik ayraç + para birimi gösterim amaçlıdır. İşlem hesapları ham sayılarla yapılır.
+        </div>
+      </div>
+
+      <!-- KDV -->
+      <div class="panel" id="panel-kdv">
+        <div class="row">
+          <select id="kdvRate" class="field">
+            <option value="1">KDV 1%</option>
+            <option value="8">KDV 8%</option>
+            <option value="10">KDV 10%</option>
+            <option value="18" selected>KDV 18%</option>
+            <option value="20">KDV 20%</option>
+          </select>
+          <button class="btn" id="netToBrut" type="button">Net → Brüt</button>
+          <button class="btn" id="brutToNet" type="button">Brüt → Net</button>
+        </div>
+
+        <div class="out" id="kdvOut">Ekrandaki sayı üzerinden hesaplar.</div>
+        <div class="hint">
+          Net→Brüt: net × (1+KDV). Brüt→Net: brüt ÷ (1+KDV). KDV tutarı ayrıca gösterilir.
+        </div>
+      </div>
+
+      <!-- YÜZDE -->
+      <div class="panel" id="panel-pct">
+        <div class="row">
+          <input id="baseA" class="field" type="text" inputmode="decimal" placeholder="A (taban) örn: 1.250,50" />
+          <input id="percB" class="field" type="text" inputmode="decimal" placeholder="B (%) örn: 18" />
+        </div>
+        <div class="row">
+          <button class="btn" id="aOfB" type="button">A'nın %B'si</button>
+          <button class="btn" id="aPlusB" type="button">A + %B</button>
+          <button class="btn" id="aMinusB" type="button">A - %B</button>
+        </div>
+
+        <div class="out" id="percOut">A ve B girip hesapla.</div>
+        <div class="hint">TR format (1.234,56) ve US format (1,234.56) otomatik anlaşılır.</div>
+      </div>
+
+      <!-- KAR/ZARAR -->
+      <div class="panel" id="panel-profit">
+        <div class="row">
+          <input id="cost" class="field" type="text" inputmode="decimal" placeholder="Maliyet" />
+          <input id="sell" class="field" type="text" inputmode="decimal" placeholder="Satış" />
+        </div>
+        <div class="row">
+          <button class="btn" id="profitCalc" type="button">Hesapla</button>
+          <button class="btn" id="swap" type="button">Yer değiştir</button>
+        </div>
+
+        <div class="out" id="profitOut">Maliyet ve satış girip “Hesapla”.</div>
+        <div class="hint">
+          Kâr = Satış − Maliyet • Kâr% (maliyet bazlı) • Marj% (satış bazlı)
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ---------- Helpers: currency formatting ----------
+    const currencySel = document.getElementById("currency");
+
+    function currencySymbol() {
+      return currencySel.value === "TRY" ? "₺" : "$";
+    }
+
+    function localeForCurrency() {
+      return currencySel.value === "TRY" ? "tr-TR" : "en-US";
+    }
+
+    function fmtMoney(n) {
+      const sym = currencySymbol();
+      const formatted = new Intl.NumberFormat(localeForCurrency(), {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }).format(n);
+      return `${sym} ${formatted}`;
+    }
+
+    // Accept "1.234,56" or "1,234.56" or plain
+    function parseLooseNumber(s) {
+      if (s == null) return null;
+      s = String(s).trim();
+      if (!s) return null;
+
+      s = s.replace(/[₺$]/g, "").replace(/\s+/g, "");
+
+      const hasComma = s.includes(",");
+      const hasDot = s.includes(".");
+
+      if (hasComma && hasDot) {
+        const lastComma = s.lastIndexOf(",");
+        const lastDot = s.lastIndexOf(".");
+        const decimalIsComma = lastComma > lastDot;
+
+        if (decimalIsComma) {
+          // 1.234,56
+          s = s.replace(/\./g, "").replace(",", ".");
+        } else {
+          // 1,234.56
+          s = s.replace(/,/g, "");
+        }
+      } else if (hasComma && !hasDot) {
+        // 1234,56
+        s = s.replace(/\./g, "").replace(",", ".");
+      } else {
+        // 1234.56 or 1234
+        s = s.replace(/,/g, "");
+      }
+
+      const n = Number(s);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function normalize(n) {
+      if (!Number.isFinite(n)) return null;
+      return Number(n.toFixed(12));
+    }
+
+    // ---------- Tabs ----------
+    const tabsWrap = document.getElementById("tabs");
+    const tabButtons = Array.from(document.querySelectorAll(".tab"));
+    const panels = {
+      calc: document.getElementById("panel-calc"),
+      kdv: document.getElementById("panel-kdv"),
+      pct: document.getElementById("panel-pct"),
+      profit: document.getElementById("panel-profit"),
+    };
+
+    function setActiveTab(key) {
+      tabButtons.forEach(b => b.classList.toggle("active", b.dataset.tab === key));
+      Object.entries(panels).forEach(([k, el]) => el.classList.toggle("active", k === key));
+    }
+
+    // pointerdown for mobile reliability
+    tabsWrap.addEventListener("pointerdown", (e) => {
+      const t = e.target.closest(".tab");
+      if (!t) return;
+      e.preventDefault();
+      setActiveTab(t.dataset.tab);
+    });
+
+    // ---------- Calculator ----------
+    const screen = document.getElementById("screen");
+    const grid = document.getElementById("grid");
+    const miniInfo = document.getElementById("miniInfo");
+
+    let expr = "0";
+
+    function setExpr(v) {
+      expr = v;
+      render();
+    }
+    function getExpr() { return expr; }
+
+    function safeEval(expression) {
+      if (!/^[0-9+\-*/%.]+$/.test(expression)) throw new Error("bad");
+      return Function('"use strict"; return (' + expression + ')')();
+    }
+
+    function isPlainNumberExpression(s) {
+      // allow "123", "123.45"
+      return /^[0-9.]+$/.test(s);
+    }
+
+    function render() {
+      if (expr === "Hata") {
+        screen.value = "Hata";
+        return;
+      }
+
+      // If it's a plain number, show formatted money
+      if (isPlainNumberExpression(expr)) {
+        const n = Number(expr);
+        screen.value = Number.isFinite(n) ? fmtMoney(n) : "Hata";
+        return;
+      }
+
+      // Otherwise show expression as-is (readable)
+      screen.value = expr;
+    }
+
+    function append(ch) {
+      const cur = getExpr();
+      if (cur === "Hata") { setExpr("0"); return append(ch); }
+      if (cur === "0" && /[0-9]/.test(ch)) return setExpr(ch);
+
+      // prevent double operator
+      if (/[+\-*/%]$/.test(cur) && /[+\-*/%]/.test(ch)) {
+        return setExpr(cur.slice(0, -1) + ch);
+      }
+
+      // prevent multiple dots in current number segment
+      if (ch === ".") {
+        const part = cur.split(/[+\-*/%]/).pop();
+        if (part.includes(".")) return;
+      }
+
+      setExpr(cur + ch);
+    }
+
+    function backspace() {
+      const cur = getExpr();
+      if (cur === "Hata") return setExpr("0");
+      if (cur.length <= 1) return setExpr("0");
+      setExpr(cur.slice(0, -1));
+    }
+
+    function clearAll() {
+      setExpr("0");
+      miniInfo.textContent = "—";
+    }
+
+    function equals() {
+      try {
+        const res = normalize(safeEval(getExpr()));
+        if (res === null) return setExpr("Hata");
+        setExpr(String(res));
+        miniInfo.textContent = "Sonuç hesaplandı";
+      } catch {
+        setExpr("Hata");
+        miniInfo.textContent = "Geçersiz ifade";
+      }
+    }
+
+    function handleKey(btn) {
+      const action = btn.dataset.action;
+      const val = btn.dataset.value;
+      if (action === "clear") return clearAll();
+      if (action === "back") return backspace();
+      if (action === "equals") return equals();
+      if (val) return append(val);
+    }
+
+    grid.addEventListener("pointerdown", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      e.preventDefault();
+      handleKey(btn);
+    });
+
+    // Keyboard
+    window.addEventListener("keydown", (e) => {
+      const k = e.key;
+      if (/[0-9]/.test(k)) return append(k);
+      if (["+", "-", "*", "/", "%", "."].includes(k)) return append(k);
+      if (k === "Enter" || k === "=") return equals();
+      if (k === "Backspace") return backspace();
+      if (k === "Escape") return clearAll();
+    });
+
+    // For KDV etc: try get number from screen/expression
+    function screenNumber() {
+      // If plain number, use it
+      if (isPlainNumberExpression(expr)) {
+        const n = Number(expr);
+        return Number.isFinite(n) ? n : null;
+      }
+      // else evaluate expression
+      try {
+        const res = normalize(safeEval(expr));
+        return res;
+      } catch {
+        return null;
+      }
+    }
+
+    currencySel.addEventListener("change", () => render());
+
+    // ---------- KDV ----------
+    const kdvRate = document.getElementById("kdvRate");
+    const kdvOut = document.getElementById("kdvOut");
+    const netToBrutBtn = document.getElementById("netToBrut");
+    const brutToNetBtn = document.getElementById("brutToNet");
+
+    function rate() { return Number(kdvRate.value) / 100; }
+
+    netToBrutBtn.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      const net = screenNumber();
+      if (net === null) return (kdvOut.textContent = "Ekrandaki değer sayı değil.");
+      const brut = normalize(net * (1 + rate()));
+      const kdvTutar = normalize(brut - net);
+      setExpr(String(brut));
+      miniInfo.textContent = `KDV ${kdvRate.value}% uygulandı`;
+      kdvOut.innerHTML = `<b>Net:</b> ${fmtMoney(net)} → <b>Brüt:</b> ${fmtMoney(brut)} • <b>KDV:</b> ${fmtMoney(kdvTutar)}`;
+    });
+
+    brutToNetBtn.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      const brut = screenNumber();
+      if (brut === null) return (kdvOut.textContent = "Ekrandaki değer sayı değil.");
+      const net = normalize(brut / (1 + rate()));
+      const kdvTutar = normalize(brut - net);
+      setExpr(String(net));
+      miniInfo.textContent = `KDV ${kdvRate.value}% ayrıştırıldı`;
+      kdvOut.innerHTML = `<b>Brüt:</b> ${fmtMoney(brut)} → <b>Net:</b> ${fmtMoney(net)} • <b>KDV:</b> ${fmtMoney(kdvTutar)}`;
+    });
+
+    // ---------- Percent ----------
+    const baseA = document.getElementById("baseA");
+    const percB = document.getElementById("percB");
+    const percOut = document.getElementById("percOut");
+    const aOfB = document.getElementById("aOfB");
+    const aPlusB = document.getElementById("aPlusB");
+    const aMinusB = document.getElementById("aMinusB");
+
+    function pctCalc(kind) {
+      const A = parseLooseNumber(baseA.value);
+      const B = parseLooseNumber(percB.value);
+      if (A === null || B === null) {
+        percOut.textContent = "A ve B'yi sayı olarak gir.";
+        return;
+      }
+      const p = B / 100;
+      let res;
+      if (kind === "of") res = A * p;
+      if (kind === "plus") res = A * (1 + p);
+      if (kind === "minus") res = A * (1 - p);
+      res = normalize(res);
+
+      setExpr(String(res));
+      miniInfo.textContent = "Yüzde hesaplandı";
+
+      const label = kind === "of" ? "A'nın %B'si" : (kind === "plus" ? "A + %B" : "A - %B");
+      percOut.innerHTML = `<b>${label}:</b> A=${fmtMoney(A)}, B=${B}% → <b>${fmtMoney(res)}</b>`;
+    }
+
+    aOfB.addEventListener("pointerdown", (e)=>{ e.preventDefault(); pctCalc("of"); });
+    aPlusB.addEventListener("pointerdown", (e)=>{ e.preventDefault(); pctCalc("plus"); });
+    aMinusB.addEventListener("pointerdown", (e)=>{ e.preventDefault(); pctCalc("minus"); });
+
+    // ---------- Profit/Loss ----------
+    const cost = document.getElementById("cost");
+    const sell = document.getElementById("sell");
+    const profitOut = document.getElementById("profitOut");
+    const profitCalc = document.getElementById("profitCalc");
+    const swap = document.getElementById("swap");
+
+    function profit() {
+      const c = parseLooseNumber(cost.value);
+      const s = parseLooseNumber(sell.value);
+      if (c === null || s === null) {
+        profitOut.textContent = "Maliyet ve Satış değerlerini sayı olarak gir.";
+        return;
+      }
+      const p = normalize(s - c);
+      const profitPct = c === 0 ? null : normalize((p / c) * 100);
+      const marginPct = s === 0 ? null : normalize((p / s) * 100);
+
+      setExpr(String(p));
+      miniInfo.textContent = "Kar/Zarar hesaplandı";
+
+      profitOut.innerHTML =
+        `<b>Kâr:</b> ${fmtMoney(p)} • <b>Kâr% (maliyet):</b> ${profitPct === null ? "—" : profitPct + "%"} • <b>Marj% (satış):</b> ${marginPct === null ? "—" : marginPct + "%"}`;
+    }
+
+    profitCalc.addEventListener("pointerdown", (e)=>{ e.preventDefault(); profit(); });
+    swap.addEventListener("pointerdown", (e)=>{
+      e.preventDefault();
+      const tmp = cost.value; cost.value = sell.value; sell.value = tmp;
+      profit();
+    });
+
+    // Init
+    render();
+
+    // Register service worker (PWA)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js");
+    }
+  </script>
+</body>
+</html>

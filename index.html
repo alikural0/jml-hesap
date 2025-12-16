@@ -12,102 +12,83 @@
 
   <style>
     :root{
-      --bg: #0b0b0c;
-      --panel: #121214;
-      --panel2: #16161a;
-      --stroke: rgba(255,255,255,.10);
-      --stroke2: rgba(255,255,255,.16);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.62);
-      --muted2: rgba(255,255,255,.45);
-      --shadow: 0 18px 55px rgba(0,0,0,.55);
-      --r: 18px;
+      --bg:#0b0b0c;
+      --panel:#121214;
+      --panel2:#16161a;
+      --stroke:rgba(255,255,255,.10);
+      --stroke2:rgba(255,255,255,.16);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.62);
+      --muted2:rgba(255,255,255,.45);
+      --shadow:0 18px 55px rgba(0,0,0,.55);
+      --r:18px;
 
-      --key: rgba(255,255,255,.06);
-      --keyHover: rgba(255,255,255,.09);
-      --danger: rgba(255,255,255,.10);
-      --accent: rgba(255,255,255,.12);
-      --good: rgba(255,255,255,.16);
+      --key:rgba(255,255,255,.06);
+      --keyHover:rgba(255,255,255,.09);
+      --good:rgba(255,255,255,.14);
     }
 
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box}
     body{
-      margin:0;
-      min-height:100vh;
+      margin:0; min-height:100vh;
       background:
         radial-gradient(900px 600px at 20% 15%, rgba(255,255,255,.06), transparent 60%),
         radial-gradient(900px 600px at 80% 85%, rgba(255,255,255,.05), transparent 60%),
         linear-gradient(180deg, var(--bg), #070708);
       color:var(--text);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      display:flex;
-      justify-content:center;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      display:flex; justify-content:center;
       padding:22px 12px;
     }
-
-    .wrap{ width:min(460px, 100%); display:flex; flex-direction:column; gap:12px; }
+    .wrap{width:min(520px,100%); display:flex; flex-direction:column; gap:12px}
 
     .topbar{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
       padding:14px;
-      border-radius: var(--r);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border-radius:var(--r);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
       border:1px solid var(--stroke);
-      box-shadow: var(--shadow);
+      box-shadow:var(--shadow);
       backdrop-filter: blur(12px);
     }
-
-    .brand{
-      display:flex; align-items:center; gap:12px; min-width:0;
-    }
+    .brand{display:flex; align-items:center; gap:12px; min-width:0}
     .brand img{
       height:40px; width:auto;
-      background: rgba(255,255,255,.88);
+      background:#fff;
       border-radius:12px;
       padding:6px 8px;
       border:1px solid rgba(0,0,0,.08);
-      box-shadow: 0 10px 28px rgba(0,0,0,.35);
+      box-shadow:0 10px 28px rgba(0,0,0,.35);
       flex:0 0 auto;
     }
-    .brand .text{ display:flex; flex-direction:column; min-width:0; }
+    .brand .text{display:flex; flex-direction:column; min-width:0}
     .brand b{
-      font-size:14px;
-      letter-spacing:.9px;
-      font-weight:800;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      font-size:14px; letter-spacing:.9px; font-weight:800;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
     .brand span{
       margin-top:3px;
-      font-size:11px;
-      letter-spacing:1.1px;
-      text-transform:uppercase;
-      color: var(--muted2);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      font-size:11px; letter-spacing:1.1px; text-transform:uppercase;
+      color:var(--muted2);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
 
-    .right{
-      display:flex; align-items:center; gap:10px;
-    }
+    .right{display:flex; align-items:center; gap:10px}
     .chip{
       padding:8px 10px;
       border-radius:999px;
       border:1px solid var(--stroke);
-      background: rgba(255,255,255,.05);
-      color: var(--muted);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
       font-size:12px;
       white-space:nowrap;
       user-select:none;
     }
     .sel{
-      height:34px;
-      border-radius:999px;
-      background: rgba(255,255,255,.05);
+      height:34px; border-radius:999px;
+      background:rgba(255,255,255,.05);
       border:1px solid var(--stroke);
-      color: var(--text);
+      color:var(--text);
       padding:0 10px;
       outline:none;
       cursor:pointer;
@@ -115,10 +96,10 @@
     }
 
     .card{
-      border-radius: var(--r);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius:var(--r);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border:1px solid var(--stroke);
-      box-shadow: var(--shadow);
+      box-shadow:var(--shadow);
       overflow:hidden;
       backdrop-filter: blur(12px);
     }
@@ -128,31 +109,34 @@
       gap:8px;
       padding:10px;
       border-bottom:1px solid rgba(255,255,255,.08);
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
     }
     .tab{
-      flex:1;
+      flex:0 0 auto;
+      padding:0 14px;
       height:40px;
       border-radius:14px;
       border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      color: var(--muted);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
       cursor:pointer;
       font-size:13px;
-      transition: .12s transform, .12s background, .12s color, .12s border-color;
+      transition:.12s transform,.12s background,.12s color,.12s border-color;
+      white-space:nowrap;
     }
-    .tab:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); color: var(--text); border-color: rgba(255,255,255,.14); }
-    .tab.active{ background: rgba(255,255,255,.10); color: var(--text); border-color: rgba(255,255,255,.18); }
+    .tab:hover{transform:translateY(-1px); background:rgba(255,255,255,.06); color:var(--text); border-color:rgba(255,255,255,.14)}
+    .tab.active{background:rgba(255,255,255,.10); color:var(--text); border-color:rgba(255,255,255,.18)}
 
-    .panel{ display:none; padding:14px; }
-    .panel.active{ display:block; }
+    .panel{display:none; padding:14px}
+    .panel.active{display:block}
 
     .screen{
-      width:100%;
-      height:76px;
+      width:100%; height:76px;
       border-radius:16px;
       border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.32);
-      color: var(--text);
+      background:rgba(0,0,0,.32);
+      color:var(--text);
       padding:12px 14px;
       text-align:right;
       font-size:30px;
@@ -160,51 +144,46 @@
     }
     .subline{
       margin-top:8px;
-      display:flex;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      gap:10px;
+      display:flex; justify-content:space-between;
+      flex-wrap:wrap; gap:10px;
       font-size:12px;
-      color: var(--muted2);
+      color:var(--muted2);
     }
 
     .grid{
       margin-top:12px;
       display:grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns:repeat(4,1fr);
       gap:10px;
-      touch-action: manipulation;
+      touch-action:manipulation;
       user-select:none;
     }
-
     button.key{
       height:56px;
       border-radius:16px;
       border:1px solid rgba(255,255,255,.10);
-      background: var(--key);
-      color: var(--text);
+      background:var(--key);
+      color:var(--text);
       font-size:18px;
       cursor:pointer;
-      transition: .10s transform, .10s background, .10s border-color;
+      transition:.10s transform,.10s background,.10s border-color;
     }
-    button.key:hover{ transform: translateY(-1px); background: var(--keyHover); border-color: rgba(255,255,255,.16); }
-    button.key:active{ transform: translateY(0px) scale(.99); }
+    button.key:hover{transform:translateY(-1px); background:var(--keyHover); border-color:rgba(255,255,255,.16)}
+    button.key:active{transform:translateY(0) scale(.99)}
+    .op{background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.14)}
+    .danger{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.14)}
+    .good{background:var(--good); border-color:rgba(255,255,255,.20)}
+    .wide{grid-column:span 2}
+    .eq{grid-column:span 2}
 
-    .op{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.14); }
-    .danger{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.14); }
-    .good{ background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.20); }
-    .wide{ grid-column: span 2; }
-    .eq{ grid-column: span 2; }
-
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
     .field{
-      flex:1;
-      min-width: 140px;
+      flex:1; min-width:150px;
       height:44px;
       border-radius:14px;
       border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.26);
-      color: var(--text);
+      background:rgba(0,0,0,.26);
+      color:var(--text);
       padding:0 12px;
       outline:none;
     }
@@ -213,481 +192,770 @@
       padding:0 12px;
       border-radius:14px;
       border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      color: var(--text);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
       cursor:pointer;
-      transition: .10s transform, .10s background;
+      transition:.10s transform,.10s background;
       font-size:13px;
+      white-space:nowrap;
     }
-    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.07); }
-    .btn:active{ transform: translateY(0px) scale(.99); }
+    .btn:hover{transform:translateY(-1px); background:rgba(255,255,255,.07)}
+    .btn:active{transform:translateY(0) scale(.99)}
 
     .out{
       margin-top:10px;
       padding:10px 12px;
       border-radius:14px;
       border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.24);
+      background:rgba(0,0,0,.24);
       font-size:13px;
-      color: rgba(255,255,255,.86);
+      color:rgba(255,255,255,.86);
       line-height:1.45;
-      word-break: break-word;
+      word-break:break-word;
     }
-    .out b{ color: var(--text); }
+    .out b{color:var(--text)}
+    .hint{margin-top:10px; font-size:12px; color:var(--muted2); line-height:1.45}
 
-    .hint{
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
       margin-top:10px;
-      font-size:12px;
-      color: var(--muted2);
-      line-height:1.45;
+      background:rgba(0,0,0,.20);
     }
+    th, td{
+      padding:10px 10px;
+      font-size:13px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      text-align:left;
+      color:rgba(255,255,255,.86);
+      white-space:nowrap;
+    }
+    th{color:rgba(255,255,255,.92); background:rgba(255,255,255,.04)}
+    tr:last-child td{border-bottom:none}
 
-    @media (max-width: 420px){
-      .brand img{ height:36px; }
-      .chip{ display:none; }
-      .screen{ font-size:26px; height:72px; }
-      button.key{ height:54px; }
+    @media (max-width:420px){
+      .brand img{height:36px}
+      .chip{display:none}
+      .screen{font-size:26px; height:72px}
+      button.key{height:54px}
+      th, td{font-size:12px}
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
+<div class="wrap">
 
-    <div class="topbar">
-      <div class="brand">
-        <img src="logo.png" alt="JML Dış Ticaret">
-        <div class="text">
-          <b>JML DIŞ TİCARET</b>
-          <span>HESAP • KDV • YÜZDE • KAR/ZARAR</span>
-        </div>
-      </div>
-
-      <div class="right">
-        <select id="currency" class="sel" title="Para birimi">
-          <option value="TRY" selected>₺ TL</option>
-          <option value="USD">$ USD</option>
-        </select>
-        <div class="chip">Mobil: Dokun • Enter: =</div>
+  <div class="topbar">
+    <div class="brand">
+      <img src="logo.png" alt="JML Dış Ticaret">
+      <div class="text">
+        <b>JML DIŞ TİCARET</b>
+        <span>HESAP • KDV • YÜZDE • KAR/ZARAR • KUR • İHRACAT</span>
       </div>
     </div>
 
-    <div class="card">
-      <div class="tabs" id="tabs">
-        <button class="tab active" data-tab="calc" type="button">Hesap</button>
-        <button class="tab" data-tab="kdv" type="button">KDV</button>
-        <button class="tab" data-tab="pct" type="button">Yüzde</button>
-        <button class="tab" data-tab="profit" type="button">Kar/Zarar</button>
-      </div>
-
-      <!-- HESAP -->
-      <div class="panel active" id="panel-calc">
-        <input id="screen" class="screen" value="0" readonly />
-        <div class="subline">
-          <span>⌫ Backspace • C Esc</span>
-          <span id="miniInfo">—</span>
-        </div>
-
-        <div class="grid" id="grid">
-          <button class="key danger" data-action="clear" type="button">C</button>
-          <button class="key danger" data-action="back" type="button">⌫</button>
-          <button class="key op" data-value="%" type="button">%</button>
-          <button class="key op" data-value="/" type="button">÷</button>
-
-          <button class="key" data-value="7" type="button">7</button>
-          <button class="key" data-value="8" type="button">8</button>
-          <button class="key" data-value="9" type="button">9</button>
-          <button class="key op" data-value="*" type="button">×</button>
-
-          <button class="key" data-value="4" type="button">4</button>
-          <button class="key" data-value="5" type="button">5</button>
-          <button class="key" data-value="6" type="button">6</button>
-          <button class="key op" data-value="-" type="button">−</button>
-
-          <button class="key" data-value="1" type="button">1</button>
-          <button class="key" data-value="2" type="button">2</button>
-          <button class="key" data-value="3" type="button">3</button>
-          <button class="key op" data-value="+" type="button">+</button>
-
-          <button class="key wide" data-value="0" type="button">0</button>
-          <button class="key" data-value="." type="button">.</button>
-          <button class="key good eq" data-action="equals" type="button">=</button>
-        </div>
-
-        <div class="hint">
-          Binlik ayraç + para birimi gösterim amaçlıdır. İşlem hesapları ham sayılarla yapılır.
-        </div>
-      </div>
-
-      <!-- KDV -->
-      <div class="panel" id="panel-kdv">
-        <div class="row">
-          <select id="kdvRate" class="field">
-            <option value="1">KDV 1%</option>
-            <option value="8">KDV 8%</option>
-            <option value="10">KDV 10%</option>
-            <option value="18" selected>KDV 18%</option>
-            <option value="20">KDV 20%</option>
-          </select>
-          <button class="btn" id="netToBrut" type="button">Net → Brüt</button>
-          <button class="btn" id="brutToNet" type="button">Brüt → Net</button>
-        </div>
-
-        <div class="out" id="kdvOut">Ekrandaki sayı üzerinden hesaplar.</div>
-        <div class="hint">
-          Net→Brüt: net × (1+KDV). Brüt→Net: brüt ÷ (1+KDV). KDV tutarı ayrıca gösterilir.
-        </div>
-      </div>
-
-      <!-- YÜZDE -->
-      <div class="panel" id="panel-pct">
-        <div class="row">
-          <input id="baseA" class="field" type="text" inputmode="decimal" placeholder="A (taban) örn: 1.250,50" />
-          <input id="percB" class="field" type="text" inputmode="decimal" placeholder="B (%) örn: 18" />
-        </div>
-        <div class="row">
-          <button class="btn" id="aOfB" type="button">A'nın %B'si</button>
-          <button class="btn" id="aPlusB" type="button">A + %B</button>
-          <button class="btn" id="aMinusB" type="button">A - %B</button>
-        </div>
-
-        <div class="out" id="percOut">A ve B girip hesapla.</div>
-        <div class="hint">TR format (1.234,56) ve US format (1,234.56) otomatik anlaşılır.</div>
-      </div>
-
-      <!-- KAR/ZARAR -->
-      <div class="panel" id="panel-profit">
-        <div class="row">
-          <input id="cost" class="field" type="text" inputmode="decimal" placeholder="Maliyet" />
-          <input id="sell" class="field" type="text" inputmode="decimal" placeholder="Satış" />
-        </div>
-        <div class="row">
-          <button class="btn" id="profitCalc" type="button">Hesapla</button>
-          <button class="btn" id="swap" type="button">Yer değiştir</button>
-        </div>
-
-        <div class="out" id="profitOut">Maliyet ve satış girip “Hesapla”.</div>
-        <div class="hint">
-          Kâr = Satış − Maliyet • Kâr% (maliyet bazlı) • Marj% (satış bazlı)
-        </div>
-      </div>
-
+    <div class="right">
+      <select id="currency" class="sel" title="Gösterim para birimi">
+        <option value="TRY" selected>₺ TL</option>
+        <option value="USD">$ USD</option>
+      </select>
+      <div class="chip">Mobil: Dokun • Enter: =</div>
     </div>
   </div>
 
-  <script>
-    // ---------- Helpers: currency formatting ----------
-    const currencySel = document.getElementById("currency");
+  <div class="card">
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="calc" type="button">Hesap</button>
+      <button class="tab" data-tab="kdv" type="button">KDV</button>
+      <button class="tab" data-tab="pct" type="button">Yüzde</button>
+      <button class="tab" data-tab="profit" type="button">Kar/Zarar</button>
+      <button class="tab" data-tab="fx" type="button">Kur</button>
+      <button class="tab" data-tab="export" type="button">İhracat</button>
+    </div>
 
-    function currencySymbol() {
-      return currencySel.value === "TRY" ? "₺" : "$";
-    }
+    <!-- HESAP -->
+    <div class="panel active" id="panel-calc">
+      <input id="screen" class="screen" value="0" readonly />
+      <div class="subline">
+        <span>⌫ Backspace • C Esc</span>
+        <span id="miniInfo">—</span>
+      </div>
 
-    function localeForCurrency() {
-      return currencySel.value === "TRY" ? "tr-TR" : "en-US";
-    }
+      <div class="grid" id="grid">
+        <button class="key danger" data-action="clear" type="button">C</button>
+        <button class="key danger" data-action="back" type="button">⌫</button>
+        <button class="key op" data-value="%" type="button">%</button>
+        <button class="key op" data-value="/" type="button">÷</button>
 
-    function fmtMoney(n) {
-      const sym = currencySymbol();
-      const formatted = new Intl.NumberFormat(localeForCurrency(), {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-      }).format(n);
-      return `${sym} ${formatted}`;
-    }
+        <button class="key" data-value="7" type="button">7</button>
+        <button class="key" data-value="8" type="button">8</button>
+        <button class="key" data-value="9" type="button">9</button>
+        <button class="key op" data-value="*" type="button">×</button>
 
-    // Accept "1.234,56" or "1,234.56" or plain
-    function parseLooseNumber(s) {
-      if (s == null) return null;
-      s = String(s).trim();
-      if (!s) return null;
+        <button class="key" data-value="4" type="button">4</button>
+        <button class="key" data-value="5" type="button">5</button>
+        <button class="key" data-value="6" type="button">6</button>
+        <button class="key op" data-value="-" type="button">−</button>
 
-      s = s.replace(/[₺$]/g, "").replace(/\s+/g, "");
+        <button class="key" data-value="1" type="button">1</button>
+        <button class="key" data-value="2" type="button">2</button>
+        <button class="key" data-value="3" type="button">3</button>
+        <button class="key op" data-value="+" type="button">+</button>
 
-      const hasComma = s.includes(",");
-      const hasDot = s.includes(".");
+        <button class="key wide" data-value="0" type="button">0</button>
+        <button class="key" data-value="." type="button">.</button>
+        <button class="key good eq" data-action="equals" type="button">=</button>
+      </div>
 
-      if (hasComma && hasDot) {
-        const lastComma = s.lastIndexOf(",");
-        const lastDot = s.lastIndexOf(".");
-        const decimalIsComma = lastComma > lastDot;
+      <div class="hint">
+        Para birimi seçimi (₺/$) gösterim içindir. İfadelerde sonuç “=” sonrası paraya formatlanır.
+      </div>
+    </div>
 
-        if (decimalIsComma) {
-          // 1.234,56
-          s = s.replace(/\./g, "").replace(",", ".");
-        } else {
-          // 1,234.56
-          s = s.replace(/,/g, "");
-        }
-      } else if (hasComma && !hasDot) {
-        // 1234,56
+    <!-- KDV -->
+    <div class="panel" id="panel-kdv">
+      <div class="row">
+        <select id="kdvRate" class="field">
+          <option value="1">KDV 1%</option>
+          <option value="8">KDV 8%</option>
+          <option value="10">KDV 10%</option>
+          <option value="18" selected>KDV 18%</option>
+          <option value="20">KDV 20%</option>
+        </select>
+        <button class="btn" id="netToBrut" type="button">Net → Brüt</button>
+        <button class="btn" id="brutToNet" type="button">Brüt → Net</button>
+      </div>
+      <div class="out" id="kdvOut">Ekrandaki sayı üzerinden hesaplar.</div>
+      <div class="hint">Net→Brüt: net × (1+KDV). Brüt→Net: brüt ÷ (1+KDV).</div>
+    </div>
+
+    <!-- YÜZDE -->
+    <div class="panel" id="panel-pct">
+      <div class="row">
+        <input id="baseA" class="field" type="text" inputmode="decimal" placeholder="A (taban) örn: 1.250,50" />
+        <input id="percB" class="field" type="text" inputmode="decimal" placeholder="B (%) örn: 18" />
+      </div>
+      <div class="row">
+        <button class="btn" id="aOfB" type="button">A'nın %B'si</button>
+        <button class="btn" id="aPlusB" type="button">A + %B</button>
+        <button class="btn" id="aMinusB" type="button">A - %B</button>
+      </div>
+      <div class="out" id="percOut">A ve B girip hesapla.</div>
+      <div class="hint">TR (1.234,56) ve US (1,234.56) formatı otomatik anlaşılır.</div>
+    </div>
+
+    <!-- KAR/ZARAR -->
+    <div class="panel" id="panel-profit">
+      <div class="row">
+        <input id="cost" class="field" type="text" inputmode="decimal" placeholder="Maliyet" />
+        <input id="sell" class="field" type="text" inputmode="decimal" placeholder="Satış" />
+      </div>
+      <div class="row">
+        <button class="btn" id="profitCalc" type="button">Hesapla</button>
+        <button class="btn" id="swap" type="button">Yer değiştir</button>
+      </div>
+      <div class="out" id="profitOut">Maliyet ve satış girip “Hesapla”.</div>
+      <div class="hint">Kâr = Satış − Maliyet • Kâr% (maliyet bazlı) • Marj% (satış bazlı)</div>
+    </div>
+
+    <!-- KUR -->
+    <div class="panel" id="panel-fx">
+      <div class="row">
+        <button class="btn" id="fxRefresh" type="button">TCMB Kurlarını Güncelle</button>
+        <select id="fxBasis" class="field" style="min-width:170px; flex:0 0 auto">
+          <option value="selling" selected>Satış (ForexSelling)</option>
+          <option value="buying">Alış (ForexBuying)</option>
+        </select>
+      </div>
+
+      <div class="out" id="fxMeta">
+        TCMB günlük kurları yüklenecek…
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <input id="fxAmount" class="field" type="text" inputmode="decimal" placeholder="Tutar (örn 1000)" />
+        <select id="fxFrom" class="field" style="min-width:140px; flex:0 0 auto"></select>
+        <select id="fxTo" class="field" style="min-width:140px; flex:0 0 auto"></select>
+        <button class="btn" id="fxConvert" type="button">Çevir</button>
+      </div>
+
+      <div class="out" id="fxOut">Kur verisi gelince çeviri yapabilirsin.</div>
+
+      <table id="fxTable" aria-label="TCMB Kurları">
+        <thead>
+          <tr>
+            <th>Döviz</th>
+            <th>Alış</th>
+            <th>Satış</th>
+          </tr>
+        </thead>
+        <tbody id="fxTbody">
+          <tr><td colspan="3">Henüz veri yok.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="hint">
+        Kaynak: TCMB today.xml. Kurlar “gösterge” niteliğindedir; piyasa anlık kurlarından farklı olabilir. :contentReference[oaicite:2]{index=2}
+      </div>
+    </div>
+
+    <!-- İHRACAT -->
+    <div class="panel" id="panel-export">
+      <div class="row">
+        <select id="incoterm" class="field" style="min-width:160px; flex:0 0 auto">
+          <option value="FOB" selected>FOB</option>
+          <option value="CFR">CFR</option>
+          <option value="CIF">CIF</option>
+          <option value="EXW">EXW</option>
+        </select>
+
+        <select id="expCur" class="field" style="min-width:140px; flex:0 0 auto">
+          <option value="USD" selected>USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="TRY">TRY</option>
+        </select>
+
+        <select id="expRateUse" class="field" style="min-width:170px; flex:0 0 auto">
+          <option value="selling" selected>TCMB Satış ile TL</option>
+          <option value="buying">TCMB Alış ile TL</option>
+        </select>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <input id="goodsValue" class="field" type="text" inputmode="decimal" placeholder="Mal bedeli (örn 25000)" />
+        <input id="freight" class="field" type="text" inputmode="decimal" placeholder="Navlun (örn 1200)" />
+        <input id="insurance" class="field" type="text" inputmode="decimal" placeholder="Sigorta (örn 150)" />
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <input id="qty" class="field" type="text" inputmode="decimal" placeholder="Miktar (örn 3000)" />
+        <input id="unitPrice" class="field" type="text" inputmode="decimal" placeholder="Birim fiyat (opsiyonel)" />
+        <button class="btn" id="expCalc" type="button">Hesapla</button>
+      </div>
+
+      <div class="out" id="expOut">
+        FOB/CFR/CIF toplamlarını ve TCMB kuruyla TL karşılığını burada göstereceğim.
+      </div>
+
+      <div class="hint">
+        Basit mantık: <b>CFR = FOB + Navlun</b>, <b>CIF = CFR + Sigorta</b>. EXW için “mal bedeli”ni baz alır.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ---------- Money formatting helpers ----------
+  const currencySel = document.getElementById("currency");
+
+  function sym(cur){ return cur==="TRY" ? "₺" : (cur==="USD" ? "$" : cur==="EUR" ? "€" : cur==="GBP" ? "£" : "¤"); }
+  function loc(cur){ return cur==="TRY" ? "tr-TR" : "en-US"; }
+
+  function fmtMoney(n, cur){
+    const formatted = new Intl.NumberFormat(loc(cur), {minimumFractionDigits:0, maximumFractionDigits:2}).format(n);
+    return `${sym(cur)} ${formatted}`;
+  }
+
+  // Accept "1.234,56" or "1,234.56" or plain
+  function parseLooseNumber(s){
+    if (s == null) return null;
+    s = String(s).trim();
+    if (!s) return null;
+
+    s = s.replace(/[₺$€£]/g, "").replace(/\s+/g, "");
+
+    const hasComma = s.includes(",");
+    const hasDot = s.includes(".");
+
+    if (hasComma && hasDot){
+      const lastComma = s.lastIndexOf(",");
+      const lastDot = s.lastIndexOf(".");
+      const decimalIsComma = lastComma > lastDot;
+
+      if (decimalIsComma){
         s = s.replace(/\./g, "").replace(",", ".");
       } else {
-        // 1234.56 or 1234
         s = s.replace(/,/g, "");
       }
+    } else if (hasComma && !hasDot){
+      s = s.replace(/\./g, "").replace(",", ".");
+    } else {
+      s = s.replace(/,/g, "");
+    }
 
-      const n = Number(s);
+    const n = Number(s);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function normalize(n){
+    if (!Number.isFinite(n)) return null;
+    return Number(n.toFixed(12));
+  }
+
+  // ---------- Tabs ----------
+  const tabsWrap = document.getElementById("tabs");
+  const tabButtons = Array.from(document.querySelectorAll(".tab"));
+  const panels = {
+    calc: document.getElementById("panel-calc"),
+    kdv: document.getElementById("panel-kdv"),
+    pct: document.getElementById("panel-pct"),
+    profit: document.getElementById("panel-profit"),
+    fx: document.getElementById("panel-fx"),
+    export: document.getElementById("panel-export"),
+  };
+
+  function setActiveTab(key){
+    tabButtons.forEach(b => b.classList.toggle("active", b.dataset.tab === key));
+    Object.entries(panels).forEach(([k, el]) => el.classList.toggle("active", k === key));
+  }
+
+  tabsWrap.addEventListener("pointerdown", (e) => {
+    const t = e.target.closest(".tab");
+    if (!t) return;
+    e.preventDefault();
+    setActiveTab(t.dataset.tab);
+  });
+
+  // ---------- Calculator ----------
+  const screen = document.getElementById("screen");
+  const grid = document.getElementById("grid");
+  const miniInfo = document.getElementById("miniInfo");
+  let expr = "0";
+
+  function setExpr(v){ expr=v; render(); }
+  function safeEval(expression){
+    if (!/^[0-9+\-*/%.]+$/.test(expression)) throw new Error("bad");
+    return Function('"use strict"; return (' + expression + ')')();
+  }
+  function isPlainNumberExpression(s){ return /^[0-9.]+$/.test(s); }
+
+  function render(){
+    if (expr === "Hata"){ screen.value = "Hata"; return; }
+    if (isPlainNumberExpression(expr)){
+      const n = Number(expr);
+      const cur = currencySel.value;
+      screen.value = Number.isFinite(n) ? fmtMoney(n, cur) : "Hata";
+      return;
+    }
+    screen.value = expr;
+  }
+
+  function append(ch){
+    const cur = expr;
+    if (cur === "Hata"){ setExpr("0"); return append(ch); }
+    if (cur === "0" && /[0-9]/.test(ch)) return setExpr(ch);
+
+    if (/[+\-*/%]$/.test(cur) && /[+\-*/%]/.test(ch)) return setExpr(cur.slice(0,-1) + ch);
+
+    if (ch === "."){
+      const part = cur.split(/[+\-*/%]/).pop();
+      if (part.includes(".")) return;
+    }
+    setExpr(cur + ch);
+  }
+
+  function backspace(){
+    if (expr === "Hata") return setExpr("0");
+    if (expr.length <= 1) return setExpr("0");
+    setExpr(expr.slice(0,-1));
+  }
+
+  function clearAll(){ setExpr("0"); miniInfo.textContent="—"; }
+
+  function equals(){
+    try{
+      const res = normalize(safeEval(expr));
+      if (res === null) return setExpr("Hata");
+      setExpr(String(res));
+      miniInfo.textContent = "Sonuç hesaplandı";
+    }catch{
+      setExpr("Hata");
+      miniInfo.textContent = "Geçersiz ifade";
+    }
+  }
+
+  function handleKey(btn){
+    const action = btn.dataset.action;
+    const val = btn.dataset.value;
+    if (action === "clear") return clearAll();
+    if (action === "back") return backspace();
+    if (action === "equals") return equals();
+    if (val) return append(val);
+  }
+
+  grid.addEventListener("pointerdown", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    e.preventDefault();
+    handleKey(btn);
+  });
+
+  window.addEventListener("keydown", (e) => {
+    const k = e.key;
+    if (/[0-9]/.test(k)) return append(k);
+    if (["+", "-", "*", "/", "%", "."].includes(k)) return append(k);
+    if (k === "Enter" || k === "=") return equals();
+    if (k === "Backspace") return backspace();
+    if (k === "Escape") return clearAll();
+  });
+
+  function screenNumber(){
+    if (isPlainNumberExpression(expr)){
+      const n = Number(expr);
       return Number.isFinite(n) ? n : null;
     }
+    try{
+      const res = normalize(safeEval(expr));
+      return res;
+    }catch{
+      return null;
+    }
+  }
 
-    function normalize(n) {
-      if (!Number.isFinite(n)) return null;
-      return Number(n.toFixed(12));
+  currencySel.addEventListener("change", () => render());
+
+  // ---------- KDV ----------
+  const kdvRate = document.getElementById("kdvRate");
+  const kdvOut = document.getElementById("kdvOut");
+  const netToBrutBtn = document.getElementById("netToBrut");
+  const brutToNetBtn = document.getElementById("brutToNet");
+
+  function rate(){ return Number(kdvRate.value)/100; }
+
+  netToBrutBtn.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    const net = screenNumber();
+    if (net === null) return (kdvOut.textContent = "Ekrandaki değer sayı değil.");
+    const brut = normalize(net * (1 + rate()));
+    const kdvTutar = normalize(brut - net);
+    setExpr(String(brut));
+    miniInfo.textContent = `KDV ${kdvRate.value}% uygulandı`;
+    kdvOut.innerHTML = `<b>Net:</b> ${fmtMoney(net, currencySel.value)} → <b>Brüt:</b> ${fmtMoney(brut, currencySel.value)} • <b>KDV:</b> ${fmtMoney(kdvTutar, currencySel.value)}`;
+  });
+
+  brutToNetBtn.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    const brut = screenNumber();
+    if (brut === null) return (kdvOut.textContent = "Ekrandaki değer sayı değil.");
+    const net = normalize(brut / (1 + rate()));
+    const kdvTutar = normalize(brut - net);
+    setExpr(String(net));
+    miniInfo.textContent = `KDV ${kdvRate.value}% ayrıştırıldı`;
+    kdvOut.innerHTML = `<b>Brüt:</b> ${fmtMoney(brut, currencySel.value)} → <b>Net:</b> ${fmtMoney(net, currencySel.value)} • <b>KDV:</b> ${fmtMoney(kdvTutar, currencySel.value)}`;
+  });
+
+  // ---------- Percent ----------
+  const baseA = document.getElementById("baseA");
+  const percB = document.getElementById("percB");
+  const percOut = document.getElementById("percOut");
+  const aOfB = document.getElementById("aOfB");
+  const aPlusB = document.getElementById("aPlusB");
+  const aMinusB = document.getElementById("aMinusB");
+
+  function pctCalc(kind){
+    const A = parseLooseNumber(baseA.value);
+    const B = parseLooseNumber(percB.value);
+    if (A === null || B === null){
+      percOut.textContent = "A ve B'yi sayı olarak gir.";
+      return;
+    }
+    const p = B/100;
+    let res;
+    if (kind==="of") res = A*p;
+    if (kind==="plus") res = A*(1+p);
+    if (kind==="minus") res = A*(1-p);
+    res = normalize(res);
+
+    setExpr(String(res));
+    miniInfo.textContent = "Yüzde hesaplandı";
+
+    const label = kind==="of" ? "A'nın %B'si" : (kind==="plus" ? "A + %B" : "A - %B");
+    percOut.innerHTML = `<b>${label}:</b> A=${fmtMoney(A, currencySel.value)}, B=${B}% → <b>${fmtMoney(res, currencySel.value)}</b>`;
+  }
+
+  aOfB.addEventListener("pointerdown", (e)=>{e.preventDefault(); pctCalc("of");});
+  aPlusB.addEventListener("pointerdown", (e)=>{e.preventDefault(); pctCalc("plus");});
+  aMinusB.addEventListener("pointerdown", (e)=>{e.preventDefault(); pctCalc("minus");});
+
+  // ---------- Profit/Loss ----------
+  const cost = document.getElementById("cost");
+  const sell = document.getElementById("sell");
+  const profitOut = document.getElementById("profitOut");
+  const profitCalc = document.getElementById("profitCalc");
+  const swap = document.getElementById("swap");
+
+  function profit(){
+    const c = parseLooseNumber(cost.value);
+    const s = parseLooseNumber(sell.value);
+    if (c === null || s === null){
+      profitOut.textContent = "Maliyet ve Satış değerlerini sayı olarak gir.";
+      return;
+    }
+    const p = normalize(s - c);
+    const profitPct = c===0 ? null : normalize((p/c)*100);
+    const marginPct = s===0 ? null : normalize((p/s)*100);
+
+    setExpr(String(p));
+    miniInfo.textContent = "Kar/Zarar hesaplandı";
+    profitOut.innerHTML = `<b>Kâr:</b> ${fmtMoney(p, currencySel.value)} • <b>Kâr% (maliyet):</b> ${profitPct===null?"—":profitPct+"%"} • <b>Marj% (satış):</b> ${marginPct===null?"—":marginPct+"%"}`;
+  }
+
+  profitCalc.addEventListener("pointerdown", (e)=>{e.preventDefault(); profit();});
+  swap.addEventListener("pointerdown", (e)=>{
+    e.preventDefault();
+    const tmp = cost.value; cost.value = sell.value; sell.value = tmp;
+    profit();
+  });
+
+  // ---------- FX (TCMB) ----------
+  const fxRefresh = document.getElementById("fxRefresh");
+  const fxBasis = document.getElementById("fxBasis");
+  const fxMeta = document.getElementById("fxMeta");
+  const fxTbody = document.getElementById("fxTbody");
+  const fxFrom = document.getElementById("fxFrom");
+  const fxTo = document.getElementById("fxTo");
+  const fxAmount = document.getElementById("fxAmount");
+  const fxConvert = document.getElementById("fxConvert");
+  const fxOut = document.getElementById("fxOut");
+
+  let fxRates = null; // { dateStr, rates: { USD:{buy,sell,unit}, ... } }
+
+  function setFxSelectOptions(){
+    const codes = ["TRY"];
+    if (fxRates) codes.push(...Object.keys(fxRates.rates).sort());
+    const opts = codes.map(c => `<option value="${c}">${c}</option>`).join("");
+    fxFrom.innerHTML = opts;
+    fxTo.innerHTML = opts;
+    fxFrom.value = "USD";
+    fxTo.value = "TRY";
+  }
+
+  function renderFxTable(){
+    if (!fxRates){
+      fxTbody.innerHTML = `<tr><td colspan="3">Henüz veri yok.</td></tr>`;
+      return;
     }
 
-    // ---------- Tabs ----------
-    const tabsWrap = document.getElementById("tabs");
-    const tabButtons = Array.from(document.querySelectorAll(".tab"));
-    const panels = {
-      calc: document.getElementById("panel-calc"),
-      kdv: document.getElementById("panel-kdv"),
-      pct: document.getElementById("panel-pct"),
-      profit: document.getElementById("panel-profit"),
-    };
+    const major = ["USD","EUR","GBP","CHF","RUB","CNY","SAR","JPY","AED"];
+    const codes = Object.keys(fxRates.rates);
+    const ordered = major.filter(m => codes.includes(m)).concat(codes.filter(c => !major.includes(c)).slice(0, 25));
 
-    function setActiveTab(key) {
-      tabButtons.forEach(b => b.classList.toggle("active", b.dataset.tab === key));
-      Object.entries(panels).forEach(([k, el]) => el.classList.toggle("active", k === key));
+    fxTbody.innerHTML = ordered.map(code => {
+      const r = fxRates.rates[code];
+      const buy = r.buy == null ? "—" : r.buy.toFixed(4);
+      const sell = r.sell == null ? "—" : r.sell.toFixed(4);
+      return `<tr><td><b>${code}</b></td><td>${buy}</td><td>${sell}</td></tr>`;
+    }).join("");
+  }
+
+  function getRateToTRY(code, basis){
+    if (code === "TRY") return 1;
+    if (!fxRates || !fxRates.rates[code]) return null;
+    const r = fxRates.rates[code];
+    const v = (basis === "buying") ? r.buy : r.sell;
+    return (v == null) ? null : v; // 1 unit code -> TRY
+  }
+
+  function convertCurrency(amount, from, to, basis){
+    // Convert: from -> TRY -> to (using TCMB rates)
+    const rFrom = getRateToTRY(from, basis);
+    const rTo = getRateToTRY(to, basis);
+    if (rFrom == null || rTo == null) return null;
+    const inTRY = amount * rFrom;
+    return inTRY / rTo;
+  }
+
+  async function fetchTCMB(){
+    fxMeta.textContent = "TCMB today.xml çekiliyor…";
+    try{
+      const res = await fetch("https://www.tcmb.gov.tr/kurlar/today.xml", { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const xmlText = await res.text();
+
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(xmlText, "application/xml");
+
+      const root = xml.querySelector("Tarih_Date");
+      const dateAttr = root?.getAttribute("Tarih") || root?.getAttribute("Date") || "—";
+
+      const map = {};
+      xml.querySelectorAll("Currency").forEach(cur => {
+        const code = cur.getAttribute("CurrencyCode") || cur.getAttribute("Kod");
+        if (!code) return;
+        const unit = Number(cur.querySelector("Unit")?.textContent || "1");
+        const buy = Number(cur.querySelector("ForexBuying")?.textContent || "");
+        const sell = Number(cur.querySelector("ForexSelling")?.textContent || "");
+        map[code] = {
+          unit: Number.isFinite(unit) ? unit : 1,
+          buy: Number.isFinite(buy) ? buy : null,
+          sell: Number.isFinite(sell) ? sell : null
+        };
+      });
+
+      // Normalize "per 1 unit"
+      Object.keys(map).forEach(code => {
+        const u = map[code].unit || 1;
+        if (u !== 1){
+          if (map[code].buy != null) map[code].buy = map[code].buy / u;
+          if (map[code].sell != null) map[code].sell = map[code].sell / u;
+          map[code].unit = 1;
+        }
+      });
+
+      fxRates = { dateStr: dateAttr, rates: map };
+      fxMeta.innerHTML = `<b>Kaynak:</b> TCMB today.xml • <b>Tarih:</b> ${fxRates.dateStr} • <b>Kur seçimi:</b> ${fxBasis.value === "buying" ? "Alış" : "Satış"}`;
+      setFxSelectOptions();
+      renderFxTable();
+      fxOut.textContent = "Kur verisi hazır. Şimdi çevir.";
+    }catch(err){
+      fxRates = null;
+      fxMeta.textContent = "Kur çekilemedi. (İnternet/CORS/TCMB erişimi) — tekrar dene.";
+      fxTbody.innerHTML = `<tr><td colspan="3">Veri çekilemedi.</td></tr>`;
+      fxOut.textContent = "Kur verisi yok.";
+    }
+  }
+
+  fxRefresh.addEventListener("pointerdown", (e)=>{e.preventDefault(); fetchTCMB();});
+  fxBasis.addEventListener("change", ()=>{ if (fxRates) fxMeta.innerHTML = `<b>Kaynak:</b> TCMB today.xml • <b>Tarih:</b> ${fxRates.dateStr} • <b>Kur seçimi:</b> ${fxBasis.value === "buying" ? "Alış" : "Satış"}`; });
+
+  fxConvert.addEventListener("pointerdown", (e)=>{
+    e.preventDefault();
+    if (!fxRates) return (fxOut.textContent = "Önce TCMB kurlarını güncelle.");
+    const amt = parseLooseNumber(fxAmount.value);
+    if (amt === null) return (fxOut.textContent = "Tutar geçersiz.");
+    const from = fxFrom.value;
+    const to = fxTo.value;
+    const basis = fxBasis.value;
+    const res = convertCurrency(amt, from, to, basis);
+    if (res === null) return (fxOut.textContent = "Bu döviz için kur bulunamadı.");
+    fxOut.innerHTML = `<b>${amt}</b> ${from} ≈ <b>${res.toFixed(4)}</b> ${to} (${basis === "buying" ? "Alış" : "Satış"})`;
+    // ekrana da yazalım
+    setExpr(String(normalize(res)));
+    miniInfo.textContent = "Kur çevirildi";
+  });
+
+  // Auto fetch once (nice UX)
+  fetchTCMB();
+
+  // ---------- Export calculator ----------
+  const incoterm = document.getElementById("incoterm");
+  const expCur = document.getElementById("expCur");
+  const expRateUse = document.getElementById("expRateUse");
+  const goodsValue = document.getElementById("goodsValue");
+  const freight = document.getElementById("freight");
+  const insurance = document.getElementById("insurance");
+  const qty = document.getElementById("qty");
+  const unitPrice = document.getElementById("unitPrice");
+  const expCalc = document.getElementById("expCalc");
+  const expOut = document.getElementById("expOut");
+
+  function expToTRY(amount, cur, basis){
+    if (cur === "TRY") return amount;
+    if (!fxRates) return null;
+    const r = getRateToTRY(cur, basis);
+    if (r == null) return null;
+    return amount * r;
+  }
+
+  expCalc.addEventListener("pointerdown", (e)=>{
+    e.preventDefault();
+
+    const cur = expCur.value;
+    const basis = expRateUse.value;
+
+    let goods = parseLooseNumber(goodsValue.value);
+    let navlun = parseLooseNumber(freight.value) || 0;
+    let sig = parseLooseNumber(insurance.value) || 0;
+
+    const q = parseLooseNumber(qty.value);
+    const up = parseLooseNumber(unitPrice.value);
+
+    // Eğer miktar & birim fiyat girildiyse mal bedelini oradan türet
+    if (q != null && up != null){
+      goods = q * up;
     }
 
-    // pointerdown for mobile reliability
-    tabsWrap.addEventListener("pointerdown", (e) => {
-      const t = e.target.closest(".tab");
-      if (!t) return;
-      e.preventDefault();
-      setActiveTab(t.dataset.tab);
-    });
-
-    // ---------- Calculator ----------
-    const screen = document.getElementById("screen");
-    const grid = document.getElementById("grid");
-    const miniInfo = document.getElementById("miniInfo");
-
-    let expr = "0";
-
-    function setExpr(v) {
-      expr = v;
-      render();
-    }
-    function getExpr() { return expr; }
-
-    function safeEval(expression) {
-      if (!/^[0-9+\-*/%.]+$/.test(expression)) throw new Error("bad");
-      return Function('"use strict"; return (' + expression + ')')();
+    if (goods == null){
+      expOut.textContent = "Mal bedeli (veya miktar + birim fiyat) gir.";
+      return;
     }
 
-    function isPlainNumberExpression(s) {
-      // allow "123", "123.45"
-      return /^[0-9.]+$/.test(s);
+    const term = incoterm.value;
+
+    // Basit: goods = EXW/FOB baz gibi düşünelim; term’e göre toplamları üretelim
+    let FOB = goods;
+    let CFR = goods + navlun;
+    let CIF = goods + navlun + sig;
+
+    // Term’e göre “verilen”i baz alıp diğerlerini hesaplayalım:
+    if (term === "FOB"){
+      FOB = goods;
+      CFR = FOB + navlun;
+      CIF = CFR + sig;
+    } else if (term === "CFR"){
+      CFR = goods;
+      FOB = CFR - navlun;
+      CIF = CFR + sig;
+    } else if (term === "CIF"){
+      CIF = goods;
+      CFR = CIF - sig;
+      FOB = CFR - navlun;
+    } else if (term === "EXW"){
+      // EXW: Navlun/sigorta eklenince CFR/CIF’e yaklaşır; FOB yoruma açık (iç taşıma/liman masrafları yok sayıldı)
+      FOB = goods; // basit kabul
+      CFR = goods + navlun;
+      CIF = CFR + sig;
     }
 
-    function render() {
-      if (expr === "Hata") {
-        screen.value = "Hata";
-        return;
-      }
+    FOB = normalize(FOB);
+    CFR = normalize(CFR);
+    CIF = normalize(CIF);
 
-      // If it's a plain number, show formatted money
-      if (isPlainNumberExpression(expr)) {
-        const n = Number(expr);
-        screen.value = Number.isFinite(n) ? fmtMoney(n) : "Hata";
-        return;
-      }
+    const fobTRY = expToTRY(FOB, cur, basis);
+    const cfrTRY = expToTRY(CFR, cur, basis);
+    const cifTRY = expToTRY(CIF, cur, basis);
 
-      // Otherwise show expression as-is (readable)
-      screen.value = expr;
+    const hasRate = (cur === "TRY") || (fxRates && getRateToTRY(cur, basis) != null);
+
+    let extra = "";
+    if (q != null && q !== 0){
+      const fobUnit = normalize(FOB / q);
+      const cifUnit = normalize(CIF / q);
+      extra = `<br><b>Birim:</b> FOB ${fobUnit.toFixed(4)} ${cur} • CIF ${cifUnit.toFixed(4)} ${cur}`;
     }
 
-    function append(ch) {
-      const cur = getExpr();
-      if (cur === "Hata") { setExpr("0"); return append(ch); }
-      if (cur === "0" && /[0-9]/.test(ch)) return setExpr(ch);
+    expOut.innerHTML =
+      `<b>${cur}</b> bazında:<br>
+       <b>FOB:</b> ${FOB.toFixed(4)} ${cur}<br>
+       <b>CFR:</b> ${CFR.toFixed(4)} ${cur}<br>
+       <b>CIF:</b> ${CIF.toFixed(4)} ${cur}
+       ${extra}
+       <br><br>
+       <b>TL karşılığı (${hasRate ? (basis==="buying"?"Alış":"Satış") : "Kur yok"}):</b><br>
+       <b>FOB:</b> ${fobTRY==null?"—":fmtMoney(fobTRY,"TRY")}<br>
+       <b>CFR:</b> ${cfrTRY==null?"—":fmtMoney(cfrTRY,"TRY")}<br>
+       <b>CIF:</b> ${cifTRY==null?"—":fmtMoney(cifTRY,"TRY")}
+      `;
 
-      // prevent double operator
-      if (/[+\-*/%]$/.test(cur) && /[+\-*/%]/.test(ch)) {
-        return setExpr(cur.slice(0, -1) + ch);
-      }
+    // ekrana CIF’i yazalım (en sık istenen)
+    setExpr(String(CIF));
+    miniInfo.textContent = "İhracat hesaplandı";
+  });
 
-      // prevent multiple dots in current number segment
-      if (ch === ".") {
-        const part = cur.split(/[+\-*/%]/).pop();
-        if (part.includes(".")) return;
-      }
+  // Register service worker
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js");
+  }
 
-      setExpr(cur + ch);
-    }
-
-    function backspace() {
-      const cur = getExpr();
-      if (cur === "Hata") return setExpr("0");
-      if (cur.length <= 1) return setExpr("0");
-      setExpr(cur.slice(0, -1));
-    }
-
-    function clearAll() {
-      setExpr("0");
-      miniInfo.textContent = "—";
-    }
-
-    function equals() {
-      try {
-        const res = normalize(safeEval(getExpr()));
-        if (res === null) return setExpr("Hata");
-        setExpr(String(res));
-        miniInfo.textContent = "Sonuç hesaplandı";
-      } catch {
-        setExpr("Hata");
-        miniInfo.textContent = "Geçersiz ifade";
-      }
-    }
-
-    function handleKey(btn) {
-      const action = btn.dataset.action;
-      const val = btn.dataset.value;
-      if (action === "clear") return clearAll();
-      if (action === "back") return backspace();
-      if (action === "equals") return equals();
-      if (val) return append(val);
-    }
-
-    grid.addEventListener("pointerdown", (e) => {
-      const btn = e.target.closest("button");
-      if (!btn) return;
-      e.preventDefault();
-      handleKey(btn);
-    });
-
-    // Keyboard
-    window.addEventListener("keydown", (e) => {
-      const k = e.key;
-      if (/[0-9]/.test(k)) return append(k);
-      if (["+", "-", "*", "/", "%", "."].includes(k)) return append(k);
-      if (k === "Enter" || k === "=") return equals();
-      if (k === "Backspace") return backspace();
-      if (k === "Escape") return clearAll();
-    });
-
-    // For KDV etc: try get number from screen/expression
-    function screenNumber() {
-      // If plain number, use it
-      if (isPlainNumberExpression(expr)) {
-        const n = Number(expr);
-        return Number.isFinite(n) ? n : null;
-      }
-      // else evaluate expression
-      try {
-        const res = normalize(safeEval(expr));
-        return res;
-      } catch {
-        return null;
-      }
-    }
-
-    currencySel.addEventListener("change", () => render());
-
-    // ---------- KDV ----------
-    const kdvRate = document.getElementById("kdvRate");
-    const kdvOut = document.getElementById("kdvOut");
-    const netToBrutBtn = document.getElementById("netToBrut");
-    const brutToNetBtn = document.getElementById("brutToNet");
-
-    function rate() { return Number(kdvRate.value) / 100; }
-
-    netToBrutBtn.addEventListener("pointerdown", (e) => {
-      e.preventDefault();
-      const net = screenNumber();
-      if (net === null) return (kdvOut.textContent = "Ekrandaki değer sayı değil.");
-      const brut = normalize(net * (1 + rate()));
-      const kdvTutar = normalize(brut - net);
-      setExpr(String(brut));
-      miniInfo.textContent = `KDV ${kdvRate.value}% uygulandı`;
-      kdvOut.innerHTML = `<b>Net:</b> ${fmtMoney(net)} → <b>Brüt:</b> ${fmtMoney(brut)} • <b>KDV:</b> ${fmtMoney(kdvTutar)}`;
-    });
-
-    brutToNetBtn.addEventListener("pointerdown", (e) => {
-      e.preventDefault();
-      const brut = screenNumber();
-      if (brut === null) return (kdvOut.textContent = "Ekrandaki değer sayı değil.");
-      const net = normalize(brut / (1 + rate()));
-      const kdvTutar = normalize(brut - net);
-      setExpr(String(net));
-      miniInfo.textContent = `KDV ${kdvRate.value}% ayrıştırıldı`;
-      kdvOut.innerHTML = `<b>Brüt:</b> ${fmtMoney(brut)} → <b>Net:</b> ${fmtMoney(net)} • <b>KDV:</b> ${fmtMoney(kdvTutar)}`;
-    });
-
-    // ---------- Percent ----------
-    const baseA = document.getElementById("baseA");
-    const percB = document.getElementById("percB");
-    const percOut = document.getElementById("percOut");
-    const aOfB = document.getElementById("aOfB");
-    const aPlusB = document.getElementById("aPlusB");
-    const aMinusB = document.getElementById("aMinusB");
-
-    function pctCalc(kind) {
-      const A = parseLooseNumber(baseA.value);
-      const B = parseLooseNumber(percB.value);
-      if (A === null || B === null) {
-        percOut.textContent = "A ve B'yi sayı olarak gir.";
-        return;
-      }
-      const p = B / 100;
-      let res;
-      if (kind === "of") res = A * p;
-      if (kind === "plus") res = A * (1 + p);
-      if (kind === "minus") res = A * (1 - p);
-      res = normalize(res);
-
-      setExpr(String(res));
-      miniInfo.textContent = "Yüzde hesaplandı";
-
-      const label = kind === "of" ? "A'nın %B'si" : (kind === "plus" ? "A + %B" : "A - %B");
-      percOut.innerHTML = `<b>${label}:</b> A=${fmtMoney(A)}, B=${B}% → <b>${fmtMoney(res)}</b>`;
-    }
-
-    aOfB.addEventListener("pointerdown", (e)=>{ e.preventDefault(); pctCalc("of"); });
-    aPlusB.addEventListener("pointerdown", (e)=>{ e.preventDefault(); pctCalc("plus"); });
-    aMinusB.addEventListener("pointerdown", (e)=>{ e.preventDefault(); pctCalc("minus"); });
-
-    // ---------- Profit/Loss ----------
-    const cost = document.getElementById("cost");
-    const sell = document.getElementById("sell");
-    const profitOut = document.getElementById("profitOut");
-    const profitCalc = document.getElementById("profitCalc");
-    const swap = document.getElementById("swap");
-
-    function profit() {
-      const c = parseLooseNumber(cost.value);
-      const s = parseLooseNumber(sell.value);
-      if (c === null || s === null) {
-        profitOut.textContent = "Maliyet ve Satış değerlerini sayı olarak gir.";
-        return;
-      }
-      const p = normalize(s - c);
-      const profitPct = c === 0 ? null : normalize((p / c) * 100);
-      const marginPct = s === 0 ? null : normalize((p / s) * 100);
-
-      setExpr(String(p));
-      miniInfo.textContent = "Kar/Zarar hesaplandı";
-
-      profitOut.innerHTML =
-        `<b>Kâr:</b> ${fmtMoney(p)} • <b>Kâr% (maliyet):</b> ${profitPct === null ? "—" : profitPct + "%"} • <b>Marj% (satış):</b> ${marginPct === null ? "—" : marginPct + "%"}`;
-    }
-
-    profitCalc.addEventListener("pointerdown", (e)=>{ e.preventDefault(); profit(); });
-    swap.addEventListener("pointerdown", (e)=>{
-      e.preventDefault();
-      const tmp = cost.value; cost.value = sell.value; sell.value = tmp;
-      profit();
-    });
-
-    // Init
-    render();
-
-    // Register service worker (PWA)
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js");
-    }
-  </script>
+  // Init
+  render();
+</script>
 </body>
 </html>

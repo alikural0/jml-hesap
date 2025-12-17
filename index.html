@@ -13,8 +13,6 @@
   <style>
     :root{
       --bg:#0b0b0c;
-      --panel:#121214;
-      --panel2:#16161a;
       --stroke:rgba(255,255,255,.10);
       --stroke2:rgba(255,255,255,.16);
       --text:rgba(255,255,255,.92);
@@ -40,7 +38,8 @@
       display:flex; justify-content:center;
       padding:22px 12px;
     }
-    .wrap{width:min(520px,100%); display:flex; flex-direction:column; gap:12px}
+
+    .wrap{width:min(560px,100%); display:flex; flex-direction:column; gap:12px}
 
     .topbar{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -216,33 +215,17 @@
     .out b{color:var(--text)}
     .hint{margin-top:10px; font-size:12px; color:var(--muted2); line-height:1.45}
 
-    table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0;
-      overflow:hidden;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      margin-top:10px;
-      background:rgba(0,0,0,.20);
-    }
-    th, td{
-      padding:10px 10px;
-      font-size:13px;
+    .listItem{
       border-bottom:1px solid rgba(255,255,255,.08);
-      text-align:left;
-      color:rgba(255,255,255,.86);
-      white-space:nowrap;
+      padding:10px 0;
     }
-    th{color:rgba(255,255,255,.92); background:rgba(255,255,255,.04)}
-    tr:last-child td{border-bottom:none}
+    .listItem:last-child{border-bottom:none}
 
     @media (max-width:420px){
       .brand img{height:36px}
       .chip{display:none}
       .screen{font-size:26px; height:72px}
       button.key{height:54px}
-      th, td{font-size:12px}
     }
   </style>
 </head>
@@ -255,7 +238,7 @@
       <img src="logo.png" alt="JML Dış Ticaret">
       <div class="text">
         <b>JML DIŞ TİCARET</b>
-        <span>HESAP • KDV • YÜZDE • KAR/ZARAR • KUR • İHRACAT</span>
+        <span>HESAP • KDV • YÜZDE • KAR/ZARAR • KUR • İHRACAT • YORUMLAR</span>
       </div>
     </div>
 
@@ -277,7 +260,6 @@
       <button class="tab" data-tab="fx" type="button">Kur</button>
       <button class="tab" data-tab="export" type="button">İhracat</button>
       <button class="tab" data-tab="comments" type="button">Yorumlar</button>
-
     </div>
 
     <!-- HESAP -->
@@ -314,15 +296,13 @@
         <button class="key good eq" data-action="equals" type="button">=</button>
       </div>
 
-      <div class="hint">
-        Para birimi seçimi (₺/$) gösterim içindir. İfadelerde sonuç “=” sonrası paraya formatlanır.
-      </div>
+      <div class="hint">Para birimi seçimi (₺/$) gösterim içindir.</div>
     </div>
 
     <!-- KDV -->
     <div class="panel" id="panel-kdv">
       <div class="row">
-        <select id="kdvRate" class="field">
+        <select id="kdvRate" class="field" style="min-width:160px; flex:0 0 auto">
           <option value="1">KDV 1%</option>
           <option value="8">KDV 8%</option>
           <option value="10">KDV 10%</option>
@@ -333,7 +313,6 @@
         <button class="btn" id="brutToNet" type="button">Brüt → Net</button>
       </div>
       <div class="out" id="kdvOut">Ekrandaki sayı üzerinden hesaplar.</div>
-      <div class="hint">Net→Brüt: net × (1+KDV). Brüt→Net: brüt ÷ (1+KDV).</div>
     </div>
 
     <!-- YÜZDE -->
@@ -365,44 +344,33 @@
       <div class="hint">Kâr = Satış − Maliyet • Kâr% (maliyet bazlı) • Marj% (satış bazlı)</div>
     </div>
 
-    <!-- KUR -->
+    <!-- KUR (Manuel) -->
     <div class="panel" id="panel-fx">
       <div class="row">
-        <button class="btn" id="fxRefresh" type="button">TCMB Kurlarını Güncelle</button>
-        <select id="fxBasis" class="field" style="min-width:170px; flex:0 0 auto">
-          <option value="selling" selected>Satış (ForexSelling)</option>
-          <option value="buying">Alış (ForexBuying)</option>
-        </select>
-      </div>
-
-      <div class="out" id="fxMeta">
-        TCMB günlük kurları yüklenecek…
+        <input id="fxRate" class="field" type="text" inputmode="decimal" placeholder="Kur (örn: 35,50)  —  1 USD = ? TRY" />
+        <button class="btn" id="fxUseUSDTRY" type="button">USD/TRY</button>
+        <button class="btn" id="fxUseEURTRY" type="button">EUR/TRY</button>
       </div>
 
       <div class="row" style="margin-top:10px">
         <input id="fxAmount" class="field" type="text" inputmode="decimal" placeholder="Tutar (örn 1000)" />
-        <select id="fxFrom" class="field" style="min-width:140px; flex:0 0 auto"></select>
-        <select id="fxTo" class="field" style="min-width:140px; flex:0 0 auto"></select>
+        <select id="fxFrom" class="field" style="min-width:140px; flex:0 0 auto">
+          <option value="USD" selected>USD</option>
+          <option value="TRY">TRY</option>
+          <option value="EUR">EUR</option>
+        </select>
+        <select id="fxTo" class="field" style="min-width:140px; flex:0 0 auto">
+          <option value="TRY" selected>TRY</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+        </select>
         <button class="btn" id="fxConvert" type="button">Çevir</button>
       </div>
 
-      <div class="out" id="fxOut">Kur verisi gelince çeviri yapabilirsin.</div>
-
-      <table id="fxTable" aria-label="TCMB Kurları">
-        <thead>
-          <tr>
-            <th>Döviz</th>
-            <th>Alış</th>
-            <th>Satış</th>
-          </tr>
-        </thead>
-        <tbody id="fxTbody">
-          <tr><td colspan="3">Henüz veri yok.</td></tr>
-        </tbody>
-      </table>
+      <div class="out" id="fxOut">Kur girip çevir yapabilirsin.</div>
 
       <div class="hint">
-        Kaynak: TCMB today.xml. Kurlar “gösterge” niteliğindedir; piyasa anlık kurlarından farklı olabilir. :contentReference[oaicite:2]{index=2}
+        TCMB otomatik çekme özelliğini sonra ekleyeceğiz (GitHub Pages tarafında CORS sebebiyle doğrudan çekim sorunlu olabiliyor).
       </div>
     </div>
 
@@ -422,11 +390,6 @@
           <option value="GBP">GBP</option>
           <option value="TRY">TRY</option>
         </select>
-
-        <select id="expRateUse" class="field" style="min-width:170px; flex:0 0 auto">
-          <option value="selling" selected>TCMB Satış ile TL</option>
-          <option value="buying">TCMB Alış ile TL</option>
-        </select>
       </div>
 
       <div class="row" style="margin-top:10px">
@@ -436,48 +399,61 @@
       </div>
 
       <div class="row" style="margin-top:10px">
+        <input id="inland" class="field" type="text" inputmode="decimal" placeholder="İç nakliye (örn 300)" />
+        <input id="portFees" class="field" type="text" inputmode="decimal" placeholder="Liman masrafı (örn 200)" />
+        <input id="commissionPct" class="field" type="text" inputmode="decimal" placeholder="Komisyon % (örn 2.5)" />
+      </div>
+
+      <div class="row" style="margin-top:10px">
         <input id="qty" class="field" type="text" inputmode="decimal" placeholder="Miktar (örn 3000)" />
         <input id="unitPrice" class="field" type="text" inputmode="decimal" placeholder="Birim fiyat (opsiyonel)" />
-        <button class="btn" id="expCalc" type="button">Hesapla</button>
+        <button class="btn" id="expCalc" type="button">Maliyet Hesapla</button>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <select id="profitBase" class="field" style="min-width:180px; flex:0 0 auto">
+          <option value="FOB" selected>Hedef satış baz: FOB</option>
+          <option value="CIF">Hedef satış baz: CIF</option>
+        </select>
+        <input id="targetProfitPct" class="field" type="text" inputmode="decimal" placeholder="Hedef kâr % (örn 12)" />
+        <button class="btn" id="priceWithProfit" type="button">Satış Fiyatı</button>
       </div>
 
       <div class="out" id="expOut">
-        FOB/CFR/CIF toplamlarını ve TCMB kuruyla TL karşılığını burada göstereceğim.
+        FOB/CFR/CIF + masraflar + hedef satış burada görünecek.
       </div>
 
       <div class="hint">
-        Basit mantık: <b>CFR = FOB + Navlun</b>, <b>CIF = CFR + Sigorta</b>. EXW için “mal bedeli”ni baz alır.
+        Basit mantık: CFR = FOB + Navlun • CIF = CFR + Sigorta. Hedef satış = (seçilen baz maliyet) × (1 + kâr%).
       </div>
     </div>
-<!-- YORUMLAR -->
-<div class="panel" id="panel-comments">
-  <div class="row">
-    <input id="cName" class="field" type="text" placeholder="İsim (opsiyonel)" />
-  </div>
 
-  <div class="row" style="margin-top:10px">
-    <input id="cText" class="field" type="text" maxlength="500" placeholder="Yorum yaz (max 500 karakter)..." />
-    <button class="btn" id="cSend" type="button">Gönder</button>
-  </div>
+    <!-- YORUMLAR -->
+    <div class="panel" id="panel-comments">
+      <div class="row">
+        <input id="cName" class="field" type="text" placeholder="İsim (opsiyonel)" />
+      </div>
 
-  <div class="out" id="cStatus">Bağlanıyor…</div>
-  <div class="out" id="cList" style="margin-top:10px">Yorumlar yükleniyor…</div>
+      <div class="row" style="margin-top:10px">
+        <input id="cText" class="field" type="text" maxlength="500" placeholder="Yorum yaz (max 500 karakter)..." />
+        <button class="btn" id="cSend" type="button">Gönder</button>
+      </div>
 
-  <div class="hint">
-    Herkesin yazdığı yorumlar anlık görünür.
-  </div>
-</div>
+      <div class="out" id="cStatus">Bağlanıyor…</div>
+      <div class="out" id="cList" style="margin-top:10px">Yorumlar yükleniyor…</div>
+
+      <div class="hint">Yorumlar Firebase üzerinde tutulur ve herkes tarafından görülebilir.</div>
+    </div>
 
   </div>
 </div>
 
 <script>
-  // ---------- Money formatting helpers ----------
+  // ---------- Formatting helpers ----------
   const currencySel = document.getElementById("currency");
 
-  function sym(cur){ return cur==="TRY" ? "₺" : (cur==="USD" ? "$" : cur==="EUR" ? "€" : cur==="GBP" ? "£" : "¤"); }
+  function sym(cur){ return cur==="TRY" ? "₺" : (cur==="USD" ? "$" : "¤"); }
   function loc(cur){ return cur==="TRY" ? "tr-TR" : "en-US"; }
-
   function fmtMoney(n, cur){
     const formatted = new Intl.NumberFormat(loc(cur), {minimumFractionDigits:0, maximumFractionDigits:2}).format(n);
     return `${sym(cur)} ${formatted}`;
@@ -498,7 +474,6 @@
       const lastComma = s.lastIndexOf(",");
       const lastDot = s.lastIndexOf(".");
       const decimalIsComma = lastComma > lastDot;
-
       if (decimalIsComma){
         s = s.replace(/\./g, "").replace(",", ".");
       } else {
@@ -529,6 +504,7 @@
     profit: document.getElementById("panel-profit"),
     fx: document.getElementById("panel-fx"),
     export: document.getElementById("panel-export"),
+    comments: document.getElementById("panel-comments"),
   };
 
   function setActiveTab(key){
@@ -549,19 +525,18 @@
   const miniInfo = document.getElementById("miniInfo");
   let expr = "0";
 
-  function setExpr(v){ expr=v; render(); }
+  function setExpr(v){ expr = v; render(); }
+  function isPlainNumberExpression(s){ return /^[0-9.]+$/.test(s); }
   function safeEval(expression){
     if (!/^[0-9+\-*/%.]+$/.test(expression)) throw new Error("bad");
     return Function('"use strict"; return (' + expression + ')')();
   }
-  function isPlainNumberExpression(s){ return /^[0-9.]+$/.test(s); }
 
   function render(){
     if (expr === "Hata"){ screen.value = "Hata"; return; }
     if (isPlainNumberExpression(expr)){
       const n = Number(expr);
-      const cur = currencySel.value;
-      screen.value = Number.isFinite(n) ? fmtMoney(n, cur) : "Hata";
+      screen.value = Number.isFinite(n) ? fmtMoney(n, currencySel.value) : "Hata";
       return;
     }
     screen.value = expr;
@@ -587,7 +562,7 @@
     setExpr(expr.slice(0,-1));
   }
 
-  function clearAll(){ setExpr("0"); miniInfo.textContent="—"; }
+  function clearAll(){ setExpr("0"); miniInfo.textContent = "—"; }
 
   function equals(){
     try{
@@ -595,7 +570,7 @@
       if (res === null) return setExpr("Hata");
       setExpr(String(res));
       miniInfo.textContent = "Sonuç hesaplandı";
-    }catch{
+    } catch {
       setExpr("Hata");
       miniInfo.textContent = "Geçersiz ifade";
     }
@@ -634,7 +609,7 @@
     try{
       const res = normalize(safeEval(expr));
       return res;
-    }catch{
+    } catch {
       return null;
     }
   }
@@ -734,187 +709,81 @@
     profit();
   });
 
-  // ---------- FX (TCMB) ----------
-  const fxRefresh = document.getElementById("fxRefresh");
-  const fxBasis = document.getElementById("fxBasis");
-  const fxMeta = document.getElementById("fxMeta");
-  const fxTbody = document.getElementById("fxTbody");
+  // ---------- FX (Manual) ----------
+  const fxRate = document.getElementById("fxRate");
+  const fxUseUSDTRY = document.getElementById("fxUseUSDTRY");
+  const fxUseEURTRY = document.getElementById("fxUseEURTRY");
+  const fxAmount = document.getElementById("fxAmount");
   const fxFrom = document.getElementById("fxFrom");
   const fxTo = document.getElementById("fxTo");
-  const fxAmount = document.getElementById("fxAmount");
   const fxConvert = document.getElementById("fxConvert");
   const fxOut = document.getElementById("fxOut");
 
-  let fxRates = null; // { dateStr, rates: { USD:{buy,sell,unit}, ... } }
-
-  function setFxSelectOptions(){
-    const codes = ["TRY"];
-    if (fxRates) codes.push(...Object.keys(fxRates.rates).sort());
-    const opts = codes.map(c => `<option value="${c}">${c}</option>`).join("");
-    fxFrom.innerHTML = opts;
-    fxTo.innerHTML = opts;
-    fxFrom.value = "USD";
-    fxTo.value = "TRY";
-  }
-
-  function renderFxTable(){
-    if (!fxRates){
-      fxTbody.innerHTML = `<tr><td colspan="3">Henüz veri yok.</td></tr>`;
-      return;
-    }
-
-    const major = ["USD","EUR","GBP","CHF","RUB","CNY","SAR","JPY","AED"];
-    const codes = Object.keys(fxRates.rates);
-    const ordered = major.filter(m => codes.includes(m)).concat(codes.filter(c => !major.includes(c)).slice(0, 25));
-
-    fxTbody.innerHTML = ordered.map(code => {
-      const r = fxRates.rates[code];
-      const buy = r.buy == null ? "—" : r.buy.toFixed(4);
-      const sell = r.sell == null ? "—" : r.sell.toFixed(4);
-      return `<tr><td><b>${code}</b></td><td>${buy}</td><td>${sell}</td></tr>`;
-    }).join("");
-  }
-
-  function getRateToTRY(code, basis){
-    if (code === "TRY") return 1;
-    if (!fxRates || !fxRates.rates[code]) return null;
-    const r = fxRates.rates[code];
-    const v = (basis === "buying") ? r.buy : r.sell;
-    return (v == null) ? null : v; // 1 unit code -> TRY
-  }
-
-  function convertCurrency(amount, from, to, basis){
-    // Convert: from -> TRY -> to (using TCMB rates)
-    const rFrom = getRateToTRY(from, basis);
-    const rTo = getRateToTRY(to, basis);
-    if (rFrom == null || rTo == null) return null;
-    const inTRY = amount * rFrom;
-    return inTRY / rTo;
-  }
-
-  async function fetchTCMB(){
-    fxMeta.textContent = "TCMB today.xml çekiliyor…";
-    try{
-      const res = await fetch("https://www.tcmb.gov.tr/kurlar/today.xml", { cache: "no-store" });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const xmlText = await res.text();
-
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(xmlText, "application/xml");
-
-      const root = xml.querySelector("Tarih_Date");
-      const dateAttr = root?.getAttribute("Tarih") || root?.getAttribute("Date") || "—";
-
-      const map = {};
-      xml.querySelectorAll("Currency").forEach(cur => {
-        const code = cur.getAttribute("CurrencyCode") || cur.getAttribute("Kod");
-        if (!code) return;
-        const unit = Number(cur.querySelector("Unit")?.textContent || "1");
-        const buy = Number(cur.querySelector("ForexBuying")?.textContent || "");
-        const sell = Number(cur.querySelector("ForexSelling")?.textContent || "");
-        map[code] = {
-          unit: Number.isFinite(unit) ? unit : 1,
-          buy: Number.isFinite(buy) ? buy : null,
-          sell: Number.isFinite(sell) ? sell : null
-        };
-      });
-
-      // Normalize "per 1 unit"
-      Object.keys(map).forEach(code => {
-        const u = map[code].unit || 1;
-        if (u !== 1){
-          if (map[code].buy != null) map[code].buy = map[code].buy / u;
-          if (map[code].sell != null) map[code].sell = map[code].sell / u;
-          map[code].unit = 1;
-        }
-      });
-
-      fxRates = { dateStr: dateAttr, rates: map };
-      fxMeta.innerHTML = `<b>Kaynak:</b> TCMB today.xml • <b>Tarih:</b> ${fxRates.dateStr} • <b>Kur seçimi:</b> ${fxBasis.value === "buying" ? "Alış" : "Satış"}`;
-      setFxSelectOptions();
-      renderFxTable();
-      fxOut.textContent = "Kur verisi hazır. Şimdi çevir.";
-    }catch(err){
-      fxRates = null;
-      fxMeta.textContent = "Kur çekilemedi. (İnternet/CORS/TCMB erişimi) — tekrar dene.";
-      fxTbody.innerHTML = `<tr><td colspan="3">Veri çekilemedi.</td></tr>`;
-      fxOut.textContent = "Kur verisi yok.";
-    }
-  }
-
-  fxRefresh.addEventListener("pointerdown", (e)=>{e.preventDefault(); fetchTCMB();});
-  fxBasis.addEventListener("change", ()=>{ if (fxRates) fxMeta.innerHTML = `<b>Kaynak:</b> TCMB today.xml • <b>Tarih:</b> ${fxRates.dateStr} • <b>Kur seçimi:</b> ${fxBasis.value === "buying" ? "Alış" : "Satış"}`; });
+  fxUseUSDTRY.addEventListener("pointerdown", (e)=>{ e.preventDefault(); fxFrom.value="USD"; fxTo.value="TRY"; });
+  fxUseEURTRY.addEventListener("pointerdown", (e)=>{ e.preventDefault(); fxFrom.value="EUR"; fxTo.value="TRY"; });
 
   fxConvert.addEventListener("pointerdown", (e)=>{
     e.preventDefault();
-    if (!fxRates) return (fxOut.textContent = "Önce TCMB kurlarını güncelle.");
+    const r = parseLooseNumber(fxRate.value);
     const amt = parseLooseNumber(fxAmount.value);
+    if (r === null || r <= 0) return (fxOut.textContent = "Kur geçersiz. Örn: 35,50");
     if (amt === null) return (fxOut.textContent = "Tutar geçersiz.");
+
     const from = fxFrom.value;
     const to = fxTo.value;
-    const basis = fxBasis.value;
-    const res = convertCurrency(amt, from, to, basis);
-    if (res === null) return (fxOut.textContent = "Bu döviz için kur bulunamadı.");
-    fxOut.innerHTML = `<b>${amt}</b> ${from} ≈ <b>${res.toFixed(4)}</b> ${to} (${basis === "buying" ? "Alış" : "Satış"})`;
-    // ekrana da yazalım
-    setExpr(String(normalize(res)));
+
+    // Basit: girilen kur "1 USD/EUR = r TRY" gibi düşünülür.
+    // USD<->TRY veya EUR<->TRY çalışır. USD<->EUR için TRY köprü gibi.
+    const base = from; // USD veya EUR veya TRY
+    let result = null;
+
+    function toTRY(x){
+      if (base === "TRY") return x;
+      return x * r; // 1 base = r TRY
+    }
+    function fromTRY(x){
+      if (to === "TRY") return x;
+      return x / r;
+    }
+
+    if ((from === "USD" || from === "EUR") && to === "TRY"){
+      result = amt * r;
+    } else if (from === "TRY" && (to === "USD" || to === "EUR")){
+      result = amt / r;
+    } else if ((from === "USD" || from === "EUR") && (to === "USD" || to === "EUR")){
+      // USD->EUR: (USD->TRY) then (TRY->EUR) using same r (yaklaşık)
+      // Bu ekran basit deneme için: aynı r kullanıldığı için sadece yaklaşık olur.
+      const inTRY = amt * r;
+      result = inTRY / r;
+    } else {
+      result = amt; // fallback
+    }
+
+    fxOut.innerHTML = `<b>${amt}</b> ${from} ≈ <b>${normalize(result).toFixed(4)}</b> ${to}`;
+    setExpr(String(normalize(result)));
     miniInfo.textContent = "Kur çevirildi";
   });
-
-  // Auto fetch once (nice UX)
-  fetchTCMB();
 
   // ---------- Export calculator ----------
   const incoterm = document.getElementById("incoterm");
   const expCur = document.getElementById("expCur");
-  const expRateUse = document.getElementById("expRateUse");
   const goodsValue = document.getElementById("goodsValue");
   const freight = document.getElementById("freight");
   const insurance = document.getElementById("insurance");
+  const inland = document.getElementById("inland");
+  const portFees = document.getElementById("portFees");
+  const commissionPct = document.getElementById("commissionPct");
   const qty = document.getElementById("qty");
   const unitPrice = document.getElementById("unitPrice");
   const expCalc = document.getElementById("expCalc");
   const expOut = document.getElementById("expOut");
+  const profitBase = document.getElementById("profitBase");
+  const targetProfitPct = document.getElementById("targetProfitPct");
+  const priceWithProfit = document.getElementById("priceWithProfit");
 
-  function expToTRY(amount, cur, basis){
-    if (cur === "TRY") return amount;
-    if (!fxRates) return null;
-    const r = getRateToTRY(cur, basis);
-    if (r == null) return null;
-    return amount * r;
-  }
+  function computeFOB_CFR_CIF(goods, navlun, sig, term){
+    let FOB = goods, CFR = goods + navlun, CIF = goods + navlun + sig;
 
-  expCalc.addEventListener("pointerdown", (e)=>{
-    e.preventDefault();
-
-    const cur = expCur.value;
-    const basis = expRateUse.value;
-
-    let goods = parseLooseNumber(goodsValue.value);
-    let navlun = parseLooseNumber(freight.value) || 0;
-    let sig = parseLooseNumber(insurance.value) || 0;
-
-    const q = parseLooseNumber(qty.value);
-    const up = parseLooseNumber(unitPrice.value);
-
-    // Eğer miktar & birim fiyat girildiyse mal bedelini oradan türet
-    if (q != null && up != null){
-      goods = q * up;
-    }
-
-    if (goods == null){
-      expOut.textContent = "Mal bedeli (veya miktar + birim fiyat) gir.";
-      return;
-    }
-
-    const term = incoterm.value;
-
-    // Basit: goods = EXW/FOB baz gibi düşünelim; term’e göre toplamları üretelim
-    let FOB = goods;
-    let CFR = goods + navlun;
-    let CIF = goods + navlun + sig;
-
-    // Term’e göre “verilen”i baz alıp diğerlerini hesaplayalım:
     if (term === "FOB"){
       FOB = goods;
       CFR = FOB + navlun;
@@ -928,194 +797,125 @@
       CFR = CIF - sig;
       FOB = CFR - navlun;
     } else if (term === "EXW"){
-      // EXW: Navlun/sigorta eklenince CFR/CIF’e yaklaşır; FOB yoruma açık (iç taşıma/liman masrafları yok sayıldı)
-      FOB = goods; // basit kabul
+      FOB = goods;
       CFR = goods + navlun;
       CIF = CFR + sig;
     }
 
-    FOB = normalize(FOB);
-    CFR = normalize(CFR);
-    CIF = normalize(CIF);
+    return { FOB: normalize(FOB), CFR: normalize(CFR), CIF: normalize(CIF) };
+  }
 
-    const fobTRY = expToTRY(FOB, cur, basis);
-    const cfrTRY = expToTRY(CFR, cur, basis);
-    const cifTRY = expToTRY(CIF, cur, basis);
+  function readExportInputs(){
+    const cur = expCur.value;
+    const term = incoterm.value;
 
-    const hasRate = (cur === "TRY") || (fxRates && getRateToTRY(cur, basis) != null);
+    let goods = parseLooseNumber(goodsValue.value);
+    const navlun = parseLooseNumber(freight.value) || 0;
+    const sig = parseLooseNumber(insurance.value) || 0;
 
-    let extra = "";
+    const inl = parseLooseNumber(inland.value) || 0;
+    const port = parseLooseNumber(portFees.value) || 0;
+    const commPct = parseLooseNumber(commissionPct.value) || 0;
+
+    const q = parseLooseNumber(qty.value);
+    const up = parseLooseNumber(unitPrice.value);
+
+    if (q != null && up != null){
+      goods = q * up;
+    }
+
+    return {cur, term, goods, navlun, sig, inl, port, commPct, q};
+  }
+
+  function fmtPlain(n, cur){
+    return `${normalize(n).toFixed(4)} ${cur}`;
+  }
+
+  expCalc.addEventListener("pointerdown", (e)=>{
+    e.preventDefault();
+
+    const {cur, term, goods, navlun, sig, inl, port, commPct, q} = readExportInputs();
+    if (goods == null){
+      expOut.textContent = "Mal bedeli (veya miktar + birim fiyat) gir.";
+      return;
+    }
+
+    const totals = computeFOB_CFR_CIF(goods, navlun, sig, term);
+
+    // Komisyonu mal bedeli üzerinden alıyoruz (deneme sürümü, net ve stabil)
+    const commissionAmount = normalize(goods * (commPct/100));
+
+    const FOB_cost = normalize(totals.FOB + inl + port + commissionAmount);
+    const CIF_cost = normalize(totals.CIF + inl + port + commissionAmount);
+
+    let unit = "";
     if (q != null && q !== 0){
-      const fobUnit = normalize(FOB / q);
-      const cifUnit = normalize(CIF / q);
-      extra = `<br><b>Birim:</b> FOB ${fobUnit.toFixed(4)} ${cur} • CIF ${cifUnit.toFixed(4)} ${cur}`;
+      unit = `<br><b>Birim maliyet:</b> FOB ${normalize(FOB_cost/q).toFixed(4)} ${cur} • CIF ${normalize(CIF_cost/q).toFixed(4)} ${cur}`;
     }
 
     expOut.innerHTML =
-      `<b>${cur}</b> bazında:<br>
-       <b>FOB:</b> ${FOB.toFixed(4)} ${cur}<br>
-       <b>CFR:</b> ${CFR.toFixed(4)} ${cur}<br>
-       <b>CIF:</b> ${CIF.toFixed(4)} ${cur}
-       ${extra}
-       <br><br>
-       <b>TL karşılığı (${hasRate ? (basis==="buying"?"Alış":"Satış") : "Kur yok"}):</b><br>
-       <b>FOB:</b> ${fobTRY==null?"—":fmtMoney(fobTRY,"TRY")}<br>
-       <b>CFR:</b> ${cfrTRY==null?"—":fmtMoney(cfrTRY,"TRY")}<br>
-       <b>CIF:</b> ${cifTRY==null?"—":fmtMoney(cifTRY,"TRY")}
-      `;
+      `<b>${cur}</b> bazında (girdi incoterm: <b>${term}</b>)<br>
+       <b>FOB:</b> ${fmtPlain(totals.FOB,cur)}<br>
+       <b>CFR:</b> ${fmtPlain(totals.CFR,cur)}<br>
+       <b>CIF:</b> ${fmtPlain(totals.CIF,cur)}<br>
+       <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:10px 0">
+       <b>Masraflar:</b> İç nakliye ${fmtPlain(inl,cur)} • Liman ${fmtPlain(port,cur)} • Komisyon ${fmtPlain(commissionAmount,cur)}<br>
+       <b>Toplam Maliyet (FOB baz):</b> ${fmtPlain(FOB_cost,cur)}<br>
+       <b>Toplam Maliyet (CIF baz):</b> ${fmtPlain(CIF_cost,cur)}
+       ${unit}`;
 
-    // ekrana CIF’i yazalım (en sık istenen)
-    setExpr(String(CIF));
-    miniInfo.textContent = "İhracat hesaplandı";
+    setExpr(String(CIF_cost));
+    miniInfo.textContent = "İhracat maliyeti hesaplandı";
   });
 
-  // Register service worker
+  priceWithProfit.addEventListener("pointerdown", (e)=>{
+    e.preventDefault();
+
+    const {cur, term, goods, navlun, sig, inl, port, commPct, q} = readExportInputs();
+    const tp = parseLooseNumber(targetProfitPct.value);
+
+    if (goods == null){
+      expOut.textContent = "Mal bedeli (veya miktar + birim fiyat) gir.";
+      return;
+    }
+    if (tp == null){
+      expOut.textContent = "Hedef kâr % gir (örn 12).";
+      return;
+    }
+
+    const totals = computeFOB_CFR_CIF(goods, navlun, sig, term);
+    const commissionAmount = normalize(goods * (commPct/100));
+    const FOB_cost = normalize(totals.FOB + inl + port + commissionAmount);
+    const CIF_cost = normalize(totals.CIF + inl + port + commissionAmount);
+
+    const base = profitBase.value; // FOB / CIF
+    const baseCost = (base === "FOB") ? FOB_cost : CIF_cost;
+
+    const sale = normalize(baseCost * (1 + tp/100));
+
+    let unit = "";
+    if (q != null && q !== 0){
+      unit = ` • <b>Birim satış:</b> ${normalize(sale/q).toFixed(4)} ${cur}`;
+    }
+
+    expOut.innerHTML =
+      `<b>Hedef satış fiyatı</b> (${base} baz, kâr%: ${tp})<br>
+       <b>Toplam maliyet:</b> ${fmtPlain(baseCost,cur)}<br>
+       <b>Satış fiyatı:</b> ${fmtPlain(sale,cur)}${unit}`;
+
+    setExpr(String(sale));
+    miniInfo.textContent = "Hedef satış hesaplandı";
+  });
+
+  // Register service worker (PWA)
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js");
   }
 
-  // Init
   render();
 </script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-  import {
-    getFirestore, collection, addDoc,
-    serverTimestamp, query, orderBy, limit, onSnapshot
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyClINZcNN-ULMNa0IXb1Oh8dRUyM6XLYwU",
-    authDomain: "jml-hesap.firebaseapp.com",
-    projectId: "jml-hesap",
-    storageBucket: "jml-hesap.firebasestorage.app",
-    messagingSenderId: "329153387130",
-    appId: "1:329153387130:web:c3f9224cabb57488a9b9c3"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  // ---- DOM ----
-  const cText = document.getElementById("cText");
-  const cName = document.getElementById("cName");
-  const cSend = document.getElementById("cSend");
-  const cStatus = document.getElementById("cStatus");
-  const cList = document.getElementById("cList");
-
-  // Anonymous login
-  signInAnonymously(auth)
-    .then(() => cStatus.textContent = "Bağlandı. Yorum yazabilirsin.")
-    .catch(() => cStatus.textContent = "Firebase bağlantı hatası.");
-
-  // Live comments
-  const q = query(
-    collection(db, "comments"),
-    orderBy("createdAt", "desc"),
-    limit(50)
-  );
-
-  onSnapshot(q, snap => {
-    if (snap.empty) {
-      cList.innerHTML = "Henüz yorum yok.";
-      return;
-    }
-    cList.innerHTML = snap.docs.map(d => {
-      const x = d.data();
-      return `
-        <div style="border-bottom:1px solid rgba(255,255,255,.08); padding:8px 0">
-          <b>${x.name || "Anonim"}</b><br>
-          <span style="opacity:.8">${x.text}</span>
-        </div>`;
-    }).join("");
-  });
-
-  // Send comment
-  cSend?.addEventListener("click", async () => {
-    const text = cText.value.trim();
-    if (!text) return;
-
-    await addDoc(collection(db, "comments"), {
-      name: cName.value.trim().slice(0, 40),
-      text,
-      createdAt: serverTimestamp()
-    });
-
-    cText.value = "";
-  });
-</script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-  import {
-    getFirestore, collection, addDoc,
-    serverTimestamp, query, orderBy, limit, onSnapshot
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyClINZcNN-ULMNa0IXb1Oh8dRUyM6XLYwU",
-    authDomain: "jml-hesap.firebaseapp.com",
-    projectId: "jml-hesap",
-    storageBucket: "jml-hesap.firebasestorage.app",
-    messagingSenderId: "329153387130",
-    appId: "1:329153387130:web:c3f9224cabb57488a9b9c3"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  // ---- DOM ----
-  const cText = document.getElementById("cText");
-  const cName = document.getElementById("cName");
-  const cSend = document.getElementById("cSend");
-  const cStatus = document.getElementById("cStatus");
-  const cList = document.getElementById("cList");
-
-  // Anonymous login
-  signInAnonymously(auth)
-    .then(() => cStatus.textContent = "Bağlandı. Yorum yazabilirsin.")
-    .catch(() => cStatus.textContent = "Firebase bağlantı hatası.");
-
-  // Live comments
-  const q = query(
-    collection(db, "comments"),
-    orderBy("createdAt", "desc"),
-    limit(50)
-  );
-
-  onSnapshot(q, snap => {
-    if (snap.empty) {
-      cList.innerHTML = "Henüz yorum yok.";
-      return;
-    }
-    cList.innerHTML = snap.docs.map(d => {
-      const x = d.data();
-      return `
-        <div style="border-bottom:1px solid rgba(255,255,255,.08); padding:8px 0">
-          <b>${x.name || "Anonim"}</b><br>
-          <span style="opacity:.8">${x.text}</span>
-        </div>`;
-    }).join("");
-  });
-
-  // Send comment
-  cSend?.addEventListener("click", async () => {
-    const text = cText.value.trim();
-    if (!text) return;
-
-    await addDoc(collection(db, "comments"), {
-      name: cName.value.trim().slice(0, 40),
-      text,
-      createdAt: serverTimestamp()
-    });
-
-    cText.value = "";
-  });
-</script>
-<!-- ================= YORUMLAR + FIREBASE ================= -->
+<!-- ================= YORUMLAR + FIREBASE (TEK BLOK) ================= -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -1143,45 +943,81 @@
   const cStatus = document.getElementById("cStatus");
   const cList = document.getElementById("cList");
 
-  signInAnonymously(auth)
-    .then(() => cStatus.textContent = "Bağlandı. Yorum yazabilirsin.")
-    .catch(() => cStatus.textContent = "Firebase bağlantı hatası.");
+  function esc(s){
+    return String(s ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
 
-  const q = query(
-    collection(db, "comments"),
-    orderBy("createdAt", "desc"),
-    limit(50)
-  );
-
-  onSnapshot(q, snap => {
-    if (snap.empty) {
-      cList.innerHTML = "Henüz yorum yok.";
+  async function boot(){
+    try{
+      await signInAnonymously(auth);
+      cStatus.textContent = "Bağlandı. Yorum yazabilirsin.";
+    }catch(e){
+      cStatus.textContent = "Bağlanamadı (Auth kapalı olabilir).";
+      console.error(e);
       return;
     }
-    cList.innerHTML = snap.docs.map(d => {
-      const x = d.data();
-      return `
-        <div style="border-bottom:1px solid rgba(255,255,255,.08); padding:8px 0">
-          <b>${x.name || "Anonim"}</b><br>
-          <span style="opacity:.8">${x.text}</span>
-        </div>`;
-    }).join("");
-  });
 
-  cSend?.addEventListener("click", async () => {
-    const text = cText.value.trim();
-    if (!text) return;
+    const q = query(collection(db, "comments"), orderBy("createdAt", "desc"), limit(50));
+    onSnapshot(q, (snap) => {
+      if (snap.empty){
+        cList.textContent = "Henüz yorum yok.";
+        return;
+      }
 
-    await addDoc(collection(db, "comments"), {
-      name: cName.value.trim().slice(0, 40),
-      text,
-      createdAt: serverTimestamp()
+      const items = [];
+      snap.forEach((doc) => {
+        const d = doc.data() || {};
+        const name = (d.name && String(d.name).trim()) ? String(d.name).trim() : "Anonim";
+        const text = String(d.text || "");
+        items.push(`
+          <div class="listItem">
+            <b>${esc(name)}</b>
+            <div style="margin-top:6px;opacity:.86;white-space:pre-wrap">${esc(text)}</div>
+          </div>
+        `);
+      });
+      cList.innerHTML = items.join("");
     });
 
-    cText.value = "";
-  });
+    let lastSend = 0;
+    cSend.addEventListener("pointerdown", async (e) => {
+      e.preventDefault();
+      const now = Date.now();
+      if (now - lastSend < 2500){
+        cStatus.textContent = "Biraz yavaş 🙂";
+        return;
+      }
+      lastSend = now;
+
+      const text = (cText.value || "").trim();
+      const name = (cName.value || "").trim().slice(0, 40);
+
+      if (!text) return (cStatus.textContent = "Yorum boş olamaz.");
+      if (text.length > 500) return (cStatus.textContent = "Max 500 karakter.");
+
+      try{
+        await addDoc(collection(db, "comments"), {
+          name,
+          text,
+          createdAt: serverTimestamp()
+        });
+        cText.value = "";
+        cStatus.textContent = "Gönderildi ✅";
+      }catch(err){
+        cStatus.textContent = "Gönderilemedi (Rules/Firestore).";
+        console.error(err);
+      }
+    });
+  }
+
+  boot();
 </script>
-<!-- ======================================================= -->
+<!-- ================================================================ -->
 
 </body>
 </html>

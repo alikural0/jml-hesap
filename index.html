@@ -47,6 +47,7 @@
 
     .wrap{width:min(600px,100%); display:flex; flex-direction:column; gap:12px; position:relative; z-index:1}
 
+    /* TOPBAR (normal ekranlarda) */
     .topbar{
       position:relative;
       z-index:10;
@@ -131,6 +132,127 @@
     .panel{display:none; padding:14px}
     .panel.active{display:block}
 
+    /* HOME menüde topbar gizle (senin görseldeki gibi) */
+    body.mode-home .topbar{ display:none; }
+
+    /* HOME (Menü tasarımı 1e1) */
+    .homeHero{
+      position:relative;
+      padding:14px;
+      border-radius:var(--r);
+      overflow:hidden;
+      min-height: 560px;
+    }
+    .homeHero::before{
+      content:"";
+      position:absolute; inset:-30px;
+      background:
+        radial-gradient(520px 260px at 18% 18%, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(520px 260px at 82% 28%, rgba(255,255,255,.08), transparent 62%),
+        radial-gradient(700px 340px at 50% 88%, rgba(255,255,255,.07), transparent 66%),
+        rgba(0,0,0,.18);
+      filter: blur(10px);
+      opacity:.95;
+      transform: scale(1.06);
+      pointer-events:none;
+    }
+    .homeHero > *{ position:relative; z-index:1; }
+
+    .homeTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .homeMiniBtn{
+      height:34px; width:42px;
+      border-radius:14px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      font-size:16px;
+      cursor:pointer;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+    }
+    .homeMiniBtn:active{ transform:scale(.98); }
+
+    .homeLogoWrap{ flex:1; display:flex; justify-content:center; }
+    .homeLogo{
+      height:46px;
+      width:auto;
+      opacity:.92;
+      filter: drop-shadow(0 10px 26px rgba(0,0,0,.55));
+      border-radius:12px;
+      background:rgba(255,255,255,.04);
+      padding:6px 8px;
+    }
+
+    .homeQuoteCard{
+      padding:14px 14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.28);
+      color:rgba(255,255,255,.88);
+      line-height:1.45;
+      font-size:14px;
+      box-shadow: 0 18px 46px rgba(0,0,0,.38);
+      margin-bottom:12px;
+    }
+
+    .homeListCard{
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.22);
+      overflow:hidden;
+      box-shadow: 0 18px 46px rgba(0,0,0,.38);
+    }
+    .homeRow{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:14px 14px;
+      background:transparent;
+      border:0;
+      color:var(--text);
+      font-size:15px;
+      cursor:pointer;
+      text-align:left;
+    }
+    .homeRow + .homeRow{ border-top:1px solid rgba(255,255,255,.10); }
+    .homeRow:hover{ background:rgba(255,255,255,.06); }
+    .homeRow:active{ background:rgba(255,255,255,.08); }
+    .homeRow i{
+      font-style:normal;
+      color:rgba(255,255,255,.55);
+      font-size:22px;
+      line-height:1;
+    }
+    .homeFooterText{
+      margin-top:14px;
+      text-align:center;
+      color:rgba(255,255,255,.62);
+      font-size:12px;
+    }
+
+    /* SPLASH (2sn) */
+    .splash{
+      position:fixed; inset:0;
+      background:#fff;
+      z-index:100000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .splash img{
+      width:min(720px, 92vw);
+      height:auto;
+      display:block;
+    }
+
+    /* CALC */
     .screen{
       width:100%; height:76px;
       border-radius:16px;
@@ -222,10 +344,8 @@
       word-break:break-word;
     }
     .hint{margin-top:10px; font-size:12px; color:var(--muted2); line-height:1.45}
-    .listItem{border-bottom:1px solid rgba(255,255,255,.08); padding:10px 0}
-    .listItem:last-child{border-bottom:none}
 
-    /* ✅ MENÜ + BACKDROP (Kesin çözüm) */
+    /* ✅ MENÜ + BACKDROP */
     .menuBackdrop{
       display:none;
       position:fixed;
@@ -294,6 +414,12 @@
 </head>
 
 <body>
+  <!-- ✅ Splash: 2sn bu görsel (splash.png yoksa sen bunun yerine görseli koyabilirsin) -->
+  <div id="splash" class="splash">
+    <!-- Senin gönderdiğin görseli projeye "splash.png" adıyla koyarsan birebir olur -->
+    <img src="splash.png" alt="JML Splash" onerror="this.src='logo.png'; this.style.width='min(520px,82vw)';" />
+  </div>
+
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
@@ -315,8 +441,41 @@
     </div>
 
     <div class="card">
+
+      <!-- ✅ HOME MENÜ (ANA PANEL) -->
+      <div class="panel" id="panel-home">
+        <div class="homeHero">
+          <div class="homeTop">
+            <button id="homeOpenMenu" class="homeMiniBtn" type="button" aria-label="Menü">☰</button>
+
+            <div class="homeLogoWrap">
+              <img src="logo.png" class="homeLogo" alt="JML Dış Ticaret">
+            </div>
+
+            <button id="homeCloseApp" class="homeMiniBtn" type="button" aria-label="Kapat">✕</button>
+          </div>
+
+          <div class="homeQuoteCard">
+            Şahane işler tek bir kişi tarafından yapılmaz, başarı bir ekip işidir.
+          </div>
+
+          <div class="homeListCard">
+            <button class="homeRow" type="button" data-tab="calc"><span>Hesap Makinesi</span><i>›</i></button>
+            <button class="homeRow" type="button" data-tab="raise"><span>Zam Hesaplama</span><i>›</i></button>
+            <button class="homeRow" type="button" data-tab="kdv"><span>KDV / Oranlar</span><i>›</i></button>
+            <button class="homeRow" type="button" data-tab="pct"><span>Yüzde</span><i>›</i></button>
+            <button class="homeRow" type="button" data-tab="profit"><span>Kar / Zarar</span><i>›</i></button>
+            <button class="homeRow" type="button" data-tab="fx"><span>Kur</span><i>›</i></button>
+            <button class="homeRow" type="button" data-tab="export"><span>İhracat</span><i>›</i></button>
+            <button class="homeRow" type="button" data-tab="comments"><span>Yorumlar</span><i>›</i></button>
+          </div>
+
+          <div class="homeFooterText">Trading with experience, excellence and trust</div>
+        </div>
+      </div>
+
       <!-- HESAP -->
-      <div class="panel active" id="panel-calc">
+      <div class="panel" id="panel-calc">
         <input id="screen" class="screen" value="0" readonly />
         <div class="subline">
           <span>⌫ Backspace • C Esc</span>
@@ -508,12 +667,13 @@
     </div>
   </div>
 
-  <!-- ✅ Backdrop + Menu BODY EN ALTTA -->
+  <!-- Backdrop + Menu -->
   <div class="menuBackdrop" id="menuBackdrop"></div>
 
   <div class="menu" id="menu">
     <div class="mTitle">Menü</div>
-    <button data-tab="calc" class="active">Hesap <small>Temel</small></button>
+    <button data-tab="home" class="active">Ana Panel <small>Başlangıç</small></button>
+    <button data-tab="calc">Hesap <small>Temel</small></button>
     <button data-tab="kdv">KDV <small>Net/Brüt</small></button>
     <button data-tab="pct">Yüzde <small>+ / −</small></button>
     <button data-tab="profit">Kar / Zarar <small>Marj</small></button>

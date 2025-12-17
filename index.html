@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>JML Dış Ticaret</title>
 
   <!-- PWA -->
@@ -13,19 +13,11 @@
   <style>
     :root{
       --bg:#0b0b0c;
-      --stroke:rgba(255,255,255,.10);
-      --stroke2:rgba(255,255,255,.16);
       --text:rgba(255,255,255,.92);
       --muted:rgba(255,255,255,.62);
       --muted2:rgba(255,255,255,.45);
-      --shadow:0 18px 55px rgba(0,0,0,.55);
       --r:18px;
-
-      --key:rgba(255,255,255,.06);
-      --keyHover:rgba(255,255,255,.09);
-      --good:rgba(255,255,255,.14);
     }
-
     *{box-sizing:border-box}
     body{
       margin:0; min-height:100vh;
@@ -38,17 +30,36 @@
       display:flex; justify-content:center;
       padding:22px 12px;
     }
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+      opacity:.14;
+    }
+    body::after{
+      content:"";
+      position:fixed; inset:-200px;
+      pointer-events:none;
+      background:
+        radial-gradient(600px 400px at 15% 10%, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(700px 500px at 85% 30%, rgba(255,255,255,.08), transparent 60%),
+        radial-gradient(700px 600px at 50% 95%, rgba(255,255,255,.06), transparent 60%);
+      filter: blur(8px);
+      opacity:.9;
+    }
 
-    .wrap{width:min(560px,100%); display:flex; flex-direction:column; gap:12px}
+    .wrap{width:min(560px,100%); display:flex; flex-direction:column; gap:12px; position:relative; z-index:1}
 
     .topbar{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
       padding:14px;
       border-radius:var(--r);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
-      border:1px solid var(--stroke);
-      box-shadow:var(--shadow);
-      backdrop-filter: blur(12px);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: 0 18px 70px rgba(0,0,0,.62);
+      backdrop-filter: blur(14px);
     }
     .brand{display:flex; align-items:center; gap:12px; min-width:0}
     .brand img{
@@ -59,6 +70,7 @@
       border:1px solid rgba(0,0,0,.08);
       box-shadow:0 10px 28px rgba(0,0,0,.35);
       flex:0 0 auto;
+      image-rendering: -webkit-optimize-contrast;
     }
     .brand .text{display:flex; flex-direction:column; min-width:0}
     .brand b{
@@ -76,7 +88,7 @@
     .chip{
       padding:8px 10px;
       border-radius:999px;
-      border:1px solid var(--stroke);
+      border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.05);
       color:var(--muted);
       font-size:12px;
@@ -86,7 +98,7 @@
     .sel{
       height:34px; border-radius:999px;
       background:rgba(255,255,255,.05);
-      border:1px solid var(--stroke);
+      border:1px solid rgba(255,255,255,.12);
       color:var(--text);
       padding:0 10px;
       outline:none;
@@ -96,14 +108,15 @@
 
     .card{
       border-radius:var(--r);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border:1px solid var(--stroke);
-      box-shadow:var(--shadow);
+      background:linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: 0 18px 70px rgba(0,0,0,.62);
       overflow:hidden;
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
     }
 
     .tabs{
+      position:relative;
       display:flex;
       gap:8px;
       padding:10px;
@@ -123,9 +136,20 @@
       font-size:13px;
       transition:.12s transform,.12s background,.12s color,.12s border-color;
       white-space:nowrap;
+      touch-action:manipulation;
     }
     .tab:hover{transform:translateY(-1px); background:rgba(255,255,255,.06); color:var(--text); border-color:rgba(255,255,255,.14)}
     .tab.active{background:rgba(255,255,255,.10); color:var(--text); border-color:rgba(255,255,255,.18)}
+    .tabs .ink{
+      position:absolute; left:10px; bottom:8px;
+      height:3px; width:60px;
+      border-radius:999px;
+      background:rgba(255,255,255,.55);
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+      transition:transform .18s ease, width .18s ease;
+      opacity:.75;
+      pointer-events:none;
+    }
 
     .panel{display:none; padding:14px}
     .panel.active{display:block}
@@ -161,17 +185,26 @@
       height:56px;
       border-radius:16px;
       border:1px solid rgba(255,255,255,.10);
-      background:var(--key);
+      background:rgba(255,255,255,.06);
       color:var(--text);
       font-size:18px;
       cursor:pointer;
       transition:.10s transform,.10s background,.10s border-color;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 12px 30px rgba(0,0,0,.35);
+      touch-action:manipulation;
     }
-    button.key:hover{transform:translateY(-1px); background:var(--keyHover); border-color:rgba(255,255,255,.16)}
-    button.key:active{transform:translateY(0) scale(.99)}
+    button.key:hover{transform:translateY(-1px); background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.16)}
+    button.key:active{
+      transform:translateY(0) scale(.99);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.06),
+        0 8px 18px rgba(0,0,0,.28);
+    }
     .op{background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.14)}
     .danger{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.14)}
-    .good{background:var(--good); border-color:rgba(255,255,255,.20)}
+    .good{background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.20)}
     .wide{grid-column:span 2}
     .eq{grid-column:span 2}
 
@@ -197,28 +230,27 @@
       transition:.10s transform,.10s background;
       font-size:13px;
       white-space:nowrap;
+      touch-action:manipulation;
     }
     .btn:hover{transform:translateY(-1px); background:rgba(255,255,255,.07)}
     .btn:active{transform:translateY(0) scale(.99)}
 
     .out{
       margin-top:10px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.24);
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(700px 260px at 20% 0%, rgba(255,255,255,.08), transparent 60%),
+        rgba(0,0,0,.22);
       font-size:13px;
-      color:rgba(255,255,255,.86);
-      line-height:1.45;
+      color:rgba(255,255,255,.88);
+      line-height:1.55;
       word-break:break-word;
     }
-    .out b{color:var(--text)}
     .hint{margin-top:10px; font-size:12px; color:var(--muted2); line-height:1.45}
 
-    .listItem{
-      border-bottom:1px solid rgba(255,255,255,.08);
-      padding:10px 0;
-    }
+    .listItem{border-bottom:1px solid rgba(255,255,255,.08); padding:10px 0}
     .listItem:last-child{border-bottom:none}
 
     @media (max-width:420px){
@@ -231,793 +263,214 @@
 </head>
 
 <body>
-<div class="wrap">
-
-  <div class="topbar">
-    <div class="brand">
-      <img src="logo.png" alt="JML Dış Ticaret">
-      <div class="text">
-        <b>JML DIŞ TİCARET</b>
-        <span>HESAP • KDV • YÜZDE • KAR/ZARAR • KUR • İHRACAT • YORUMLAR</span>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <img src="logo.png" alt="JML Dış Ticaret">
+        <div class="text">
+          <b>JML DIŞ TİCARET</b>
+          <span>HESAP • KDV • YÜZDE • KAR/ZARAR • KUR • İHRACAT • YORUMLAR</span>
+        </div>
+      </div>
+      <div class="right">
+        <select id="currency" class="sel" title="Gösterim para birimi">
+          <option value="TRY" selected>₺ TL</option>
+          <option value="USD">$ USD</option>
+        </select>
+        <div class="chip">Mobil: Dokun • Enter: =</div>
       </div>
     </div>
 
-    <div class="right">
-      <select id="currency" class="sel" title="Gösterim para birimi">
-        <option value="TRY" selected>₺ TL</option>
-        <option value="USD">$ USD</option>
-      </select>
-      <div class="chip">Mobil: Dokun • Enter: =</div>
+    <div class="card">
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="calc" type="button">Hesap</button>
+        <button class="tab" data-tab="kdv" type="button">KDV</button>
+        <button class="tab" data-tab="pct" type="button">Yüzde</button>
+        <button class="tab" data-tab="profit" type="button">Kar/Zarar</button>
+        <button class="tab" data-tab="fx" type="button">Kur</button>
+        <button class="tab" data-tab="export" type="button">İhracat</button>
+        <button class="tab" data-tab="comments" type="button">Yorumlar</button>
+        <div class="ink" id="tabInk"></div>
+      </div>
+
+      <!-- HESAP -->
+      <div class="panel active" id="panel-calc">
+        <input id="screen" class="screen" value="0" readonly />
+        <div class="subline">
+          <span>⌫ Backspace • C Esc</span>
+          <span id="miniInfo">—</span>
+        </div>
+
+        <div class="grid" id="grid">
+          <button class="key danger" data-action="clear" type="button">C</button>
+          <button class="key danger" data-action="back" type="button">⌫</button>
+          <button class="key op" data-value="%" type="button">%</button>
+          <button class="key op" data-value="/" type="button">÷</button>
+
+          <button class="key" data-value="7" type="button">7</button>
+          <button class="key" data-value="8" type="button">8</button>
+          <button class="key" data-value="9" type="button">9</button>
+          <button class="key op" data-value="*" type="button">×</button>
+
+          <button class="key" data-value="4" type="button">4</button>
+          <button class="key" data-value="5" type="button">5</button>
+          <button class="key" data-value="6" type="button">6</button>
+          <button class="key op" data-value="-" type="button">−</button>
+
+          <button class="key" data-value="1" type="button">1</button>
+          <button class="key" data-value="2" type="button">2</button>
+          <button class="key" data-value="3" type="button">3</button>
+          <button class="key op" data-value="+" type="button">+</button>
+
+          <button class="key wide" data-value="0" type="button">0</button>
+          <button class="key" data-value="." type="button">.</button>
+          <button class="key good eq" data-action="equals" type="button">=</button>
+        </div>
+
+        <div class="hint">Para birimi seçimi (₺/$) gösterim içindir.</div>
+      </div>
+
+      <!-- KDV -->
+      <div class="panel" id="panel-kdv">
+        <div class="row">
+          <select id="kdvRate" class="field" style="min-width:160px; flex:0 0 auto">
+            <option value="1">KDV 1%</option>
+            <option value="8">KDV 8%</option>
+            <option value="10">KDV 10%</option>
+            <option value="18" selected>KDV 18%</option>
+            <option value="20">KDV 20%</option>
+          </select>
+          <button class="btn" id="netToBrut" type="button">Net → Brüt</button>
+          <button class="btn" id="brutToNet" type="button">Brüt → Net</button>
+        </div>
+        <div class="out" id="kdvOut">Ekrandaki sayı üzerinden hesaplar.</div>
+      </div>
+
+      <!-- YÜZDE -->
+      <div class="panel" id="panel-pct">
+        <div class="row">
+          <input id="baseA" class="field" type="text" inputmode="decimal" placeholder="A (taban) örn: 1.250,50" />
+          <input id="percB" class="field" type="text" inputmode="decimal" placeholder="B (%) örn: 18" />
+        </div>
+        <div class="row">
+          <button class="btn" id="aOfB" type="button">A'nın %B'si</button>
+          <button class="btn" id="aPlusB" type="button">A + %B</button>
+          <button class="btn" id="aMinusB" type="button">A - %B</button>
+        </div>
+        <div class="out" id="percOut">A ve B girip hesapla.</div>
+        <div class="hint">TR (1.234,56) ve US (1,234.56) formatı otomatik anlaşılır.</div>
+      </div>
+
+      <!-- KAR/ZARAR -->
+      <div class="panel" id="panel-profit">
+        <div class="row">
+          <input id="cost" class="field" type="text" inputmode="decimal" placeholder="Maliyet" />
+          <input id="sell" class="field" type="text" inputmode="decimal" placeholder="Satış" />
+        </div>
+        <div class="row">
+          <button class="btn" id="profitCalc" type="button">Hesapla</button>
+          <button class="btn" id="swap" type="button">Yer değiştir</button>
+        </div>
+        <div class="out" id="profitOut">Maliyet ve satış girip “Hesapla”.</div>
+        <div class="hint">Kâr = Satış − Maliyet • Kâr% (maliyet) • Marj% (satış)</div>
+      </div>
+
+      <!-- KUR (Manuel) -->
+      <div class="panel" id="panel-fx">
+        <div class="row">
+          <input id="fxRate" class="field" type="text" inputmode="decimal" placeholder="Kur (örn: 35,50) — 1 USD/EUR = ? TRY" />
+          <button class="btn" id="fxUseUSDTRY" type="button">USD/TRY</button>
+          <button class="btn" id="fxUseEURTRY" type="button">EUR/TRY</button>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <input id="fxAmount" class="field" type="text" inputmode="decimal" placeholder="Tutar (örn 1000)" />
+          <select id="fxFrom" class="field" style="min-width:140px; flex:0 0 auto">
+            <option value="USD" selected>USD</option>
+            <option value="TRY">TRY</option>
+            <option value="EUR">EUR</option>
+          </select>
+          <select id="fxTo" class="field" style="min-width:140px; flex:0 0 auto">
+            <option value="TRY" selected>TRY</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+          </select>
+          <button class="btn" id="fxConvert" type="button">Çevir</button>
+        </div>
+
+        <div class="out" id="fxOut">Kur girip çevir yapabilirsin.</div>
+        <div class="hint">TCMB otomatik kur: sonraki güncelleme (CORS/Actions).</div>
+      </div>
+
+      <!-- İHRACAT -->
+      <div class="panel" id="panel-export">
+        <div class="row">
+          <select id="incoterm" class="field" style="min-width:160px; flex:0 0 auto">
+            <option value="FOB" selected>FOB</option>
+            <option value="CFR">CFR</option>
+            <option value="CIF">CIF</option>
+            <option value="EXW">EXW</option>
+          </select>
+
+          <select id="expCur" class="field" style="min-width:140px; flex:0 0 auto">
+            <option value="USD" selected>USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="TRY">TRY</option>
+          </select>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <input id="goodsValue" class="field" type="text" inputmode="decimal" placeholder="Mal bedeli (örn 25000)" />
+          <input id="freight" class="field" type="text" inputmode="decimal" placeholder="Navlun (örn 1200)" />
+          <input id="insurance" class="field" type="text" inputmode="decimal" placeholder="Sigorta (örn 150)" />
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <input id="inland" class="field" type="text" inputmode="decimal" placeholder="İç nakliye (örn 300)" />
+          <input id="portFees" class="field" type="text" inputmode="decimal" placeholder="Liman masrafı (örn 200)" />
+          <input id="commissionPct" class="field" type="text" inputmode="decimal" placeholder="Komisyon % (örn 2.5)" />
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <input id="qty" class="field" type="text" inputmode="decimal" placeholder="Miktar (örn 3000)" />
+          <input id="unitPrice" class="field" type="text" inputmode="decimal" placeholder="Birim fiyat (opsiyonel)" />
+          <button class="btn" id="expCalc" type="button">Maliyet Hesapla</button>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <select id="profitBase" class="field" style="min-width:180px; flex:0 0 auto">
+            <option value="FOB" selected>Hedef satış baz: FOB</option>
+            <option value="CIF">Hedef satış baz: CIF</option>
+          </select>
+          <input id="targetProfitPct" class="field" type="text" inputmode="decimal" placeholder="Hedef kâr % (örn 12)" />
+          <button class="btn" id="priceWithProfit" type="button">Satış Fiyatı</button>
+        </div>
+
+        <div class="out" id="expOut">FOB/CFR/CIF + masraflar + hedef satış burada.</div>
+        <div class="hint">CFR = FOB + Navlun • CIF = CFR + Sigorta</div>
+      </div>
+
+      <!-- YORUMLAR -->
+      <div class="panel" id="panel-comments">
+        <div class="row">
+          <input id="cName" class="field" type="text" placeholder="İsim (opsiyonel)" />
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <input id="cText" class="field" type="text" maxlength="500" placeholder="Yorum yaz (max 500 karakter)..." />
+          <button class="btn" id="cSend" type="button">Gönder</button>
+        </div>
+
+        <div class="out" id="cStatus">Bağlanıyor…</div>
+        <div class="out" id="cList" style="margin-top:10px">Yorumlar yükleniyor…</div>
+
+        <div class="hint">Yorumlar Firebase’de tutulur ve anlık güncellenir.</div>
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="tabs" id="tabs">
-      <button class="tab active" data-tab="calc" type="button">Hesap</button>
-      <button class="tab" data-tab="kdv" type="button">KDV</button>
-      <button class="tab" data-tab="pct" type="button">Yüzde</button>
-      <button class="tab" data-tab="profit" type="button">Kar/Zarar</button>
-      <button class="tab" data-tab="fx" type="button">Kur</button>
-      <button class="tab" data-tab="export" type="button">İhracat</button>
-      <button class="tab" data-tab="comments" type="button">Yorumlar</button>
-    </div>
-
-    <!-- HESAP -->
-    <div class="panel active" id="panel-calc">
-      <input id="screen" class="screen" value="0" readonly />
-      <div class="subline">
-        <span>⌫ Backspace • C Esc</span>
-        <span id="miniInfo">—</span>
-      </div>
-
-      <div class="grid" id="grid">
-        <button class="key danger" data-action="clear" type="button">C</button>
-        <button class="key danger" data-action="back" type="button">⌫</button>
-        <button class="key op" data-value="%" type="button">%</button>
-        <button class="key op" data-value="/" type="button">÷</button>
-
-        <button class="key" data-value="7" type="button">7</button>
-        <button class="key" data-value="8" type="button">8</button>
-        <button class="key" data-value="9" type="button">9</button>
-        <button class="key op" data-value="*" type="button">×</button>
-
-        <button class="key" data-value="4" type="button">4</button>
-        <button class="key" data-value="5" type="button">5</button>
-        <button class="key" data-value="6" type="button">6</button>
-        <button class="key op" data-value="-" type="button">−</button>
-
-        <button class="key" data-value="1" type="button">1</button>
-        <button class="key" data-value="2" type="button">2</button>
-        <button class="key" data-value="3" type="button">3</button>
-        <button class="key op" data-value="+" type="button">+</button>
-
-        <button class="key wide" data-value="0" type="button">0</button>
-        <button class="key" data-value="." type="button">.</button>
-        <button class="key good eq" data-action="equals" type="button">=</button>
-      </div>
-
-      <div class="hint">Para birimi seçimi (₺/$) gösterim içindir.</div>
-    </div>
-
-    <!-- KDV -->
-    <div class="panel" id="panel-kdv">
-      <div class="row">
-        <select id="kdvRate" class="field" style="min-width:160px; flex:0 0 auto">
-          <option value="1">KDV 1%</option>
-          <option value="8">KDV 8%</option>
-          <option value="10">KDV 10%</option>
-          <option value="18" selected>KDV 18%</option>
-          <option value="20">KDV 20%</option>
-        </select>
-        <button class="btn" id="netToBrut" type="button">Net → Brüt</button>
-        <button class="btn" id="brutToNet" type="button">Brüt → Net</button>
-      </div>
-      <div class="out" id="kdvOut">Ekrandaki sayı üzerinden hesaplar.</div>
-    </div>
-
-    <!-- YÜZDE -->
-    <div class="panel" id="panel-pct">
-      <div class="row">
-        <input id="baseA" class="field" type="text" inputmode="decimal" placeholder="A (taban) örn: 1.250,50" />
-        <input id="percB" class="field" type="text" inputmode="decimal" placeholder="B (%) örn: 18" />
-      </div>
-      <div class="row">
-        <button class="btn" id="aOfB" type="button">A'nın %B'si</button>
-        <button class="btn" id="aPlusB" type="button">A + %B</button>
-        <button class="btn" id="aMinusB" type="button">A - %B</button>
-      </div>
-      <div class="out" id="percOut">A ve B girip hesapla.</div>
-      <div class="hint">TR (1.234,56) ve US (1,234.56) formatı otomatik anlaşılır.</div>
-    </div>
-
-    <!-- KAR/ZARAR -->
-    <div class="panel" id="panel-profit">
-      <div class="row">
-        <input id="cost" class="field" type="text" inputmode="decimal" placeholder="Maliyet" />
-        <input id="sell" class="field" type="text" inputmode="decimal" placeholder="Satış" />
-      </div>
-      <div class="row">
-        <button class="btn" id="profitCalc" type="button">Hesapla</button>
-        <button class="btn" id="swap" type="button">Yer değiştir</button>
-      </div>
-      <div class="out" id="profitOut">Maliyet ve satış girip “Hesapla”.</div>
-      <div class="hint">Kâr = Satış − Maliyet • Kâr% (maliyet bazlı) • Marj% (satış bazlı)</div>
-    </div>
-
-    <!-- KUR (Manuel) -->
-    <div class="panel" id="panel-fx">
-      <div class="row">
-        <input id="fxRate" class="field" type="text" inputmode="decimal" placeholder="Kur (örn: 35,50)  —  1 USD = ? TRY" />
-        <button class="btn" id="fxUseUSDTRY" type="button">USD/TRY</button>
-        <button class="btn" id="fxUseEURTRY" type="button">EUR/TRY</button>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <input id="fxAmount" class="field" type="text" inputmode="decimal" placeholder="Tutar (örn 1000)" />
-        <select id="fxFrom" class="field" style="min-width:140px; flex:0 0 auto">
-          <option value="USD" selected>USD</option>
-          <option value="TRY">TRY</option>
-          <option value="EUR">EUR</option>
-        </select>
-        <select id="fxTo" class="field" style="min-width:140px; flex:0 0 auto">
-          <option value="TRY" selected>TRY</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-        </select>
-        <button class="btn" id="fxConvert" type="button">Çevir</button>
-      </div>
-
-      <div class="out" id="fxOut">Kur girip çevir yapabilirsin.</div>
-
-      <div class="hint">
-        TCMB otomatik çekme özelliğini sonra ekleyeceğiz (GitHub Pages tarafında CORS sebebiyle doğrudan çekim sorunlu olabiliyor).
-      </div>
-    </div>
-
-    <!-- İHRACAT -->
-    <div class="panel" id="panel-export">
-      <div class="row">
-        <select id="incoterm" class="field" style="min-width:160px; flex:0 0 auto">
-          <option value="FOB" selected>FOB</option>
-          <option value="CFR">CFR</option>
-          <option value="CIF">CIF</option>
-          <option value="EXW">EXW</option>
-        </select>
-
-        <select id="expCur" class="field" style="min-width:140px; flex:0 0 auto">
-          <option value="USD" selected>USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="TRY">TRY</option>
-        </select>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <input id="goodsValue" class="field" type="text" inputmode="decimal" placeholder="Mal bedeli (örn 25000)" />
-        <input id="freight" class="field" type="text" inputmode="decimal" placeholder="Navlun (örn 1200)" />
-        <input id="insurance" class="field" type="text" inputmode="decimal" placeholder="Sigorta (örn 150)" />
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <input id="inland" class="field" type="text" inputmode="decimal" placeholder="İç nakliye (örn 300)" />
-        <input id="portFees" class="field" type="text" inputmode="decimal" placeholder="Liman masrafı (örn 200)" />
-        <input id="commissionPct" class="field" type="text" inputmode="decimal" placeholder="Komisyon % (örn 2.5)" />
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <input id="qty" class="field" type="text" inputmode="decimal" placeholder="Miktar (örn 3000)" />
-        <input id="unitPrice" class="field" type="text" inputmode="decimal" placeholder="Birim fiyat (opsiyonel)" />
-        <button class="btn" id="expCalc" type="button">Maliyet Hesapla</button>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <select id="profitBase" class="field" style="min-width:180px; flex:0 0 auto">
-          <option value="FOB" selected>Hedef satış baz: FOB</option>
-          <option value="CIF">Hedef satış baz: CIF</option>
-        </select>
-        <input id="targetProfitPct" class="field" type="text" inputmode="decimal" placeholder="Hedef kâr % (örn 12)" />
-        <button class="btn" id="priceWithProfit" type="button">Satış Fiyatı</button>
-      </div>
-
-      <div class="out" id="expOut">
-        FOB/CFR/CIF + masraflar + hedef satış burada görünecek.
-      </div>
-
-      <div class="hint">
-        Basit mantık: CFR = FOB + Navlun • CIF = CFR + Sigorta. Hedef satış = (seçilen baz maliyet) × (1 + kâr%).
-      </div>
-    </div>
-
-    <!-- YORUMLAR -->
-    <div class="panel" id="panel-comments">
-      <div class="row">
-        <input id="cName" class="field" type="text" placeholder="İsim (opsiyonel)" />
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <input id="cText" class="field" type="text" maxlength="500" placeholder="Yorum yaz (max 500 karakter)..." />
-        <button class="btn" id="cSend" type="button">Gönder</button>
-      </div>
-
-      <div class="out" id="cStatus">Bağlanıyor…</div>
-      <div class="out" id="cList" style="margin-top:10px">Yorumlar yükleniyor…</div>
-
-      <div class="hint">Yorumlar Firebase üzerinde tutulur ve herkes tarafından görülebilir.</div>
-    </div>
-
-  </div>
-</div>
-
-<script>
-  // ---------- Formatting helpers ----------
-  const currencySel = document.getElementById("currency");
-
-  function sym(cur){ return cur==="TRY" ? "₺" : (cur==="USD" ? "$" : "¤"); }
-  function loc(cur){ return cur==="TRY" ? "tr-TR" : "en-US"; }
-  function fmtMoney(n, cur){
-    const formatted = new Intl.NumberFormat(loc(cur), {minimumFractionDigits:0, maximumFractionDigits:2}).format(n);
-    return `${sym(cur)} ${formatted}`;
-  }
-
-  // Accept "1.234,56" or "1,234.56" or plain
-  function parseLooseNumber(s){
-    if (s == null) return null;
-    s = String(s).trim();
-    if (!s) return null;
-
-    s = s.replace(/[₺$€£]/g, "").replace(/\s+/g, "");
-
-    const hasComma = s.includes(",");
-    const hasDot = s.includes(".");
-
-    if (hasComma && hasDot){
-      const lastComma = s.lastIndexOf(",");
-      const lastDot = s.lastIndexOf(".");
-      const decimalIsComma = lastComma > lastDot;
-      if (decimalIsComma){
-        s = s.replace(/\./g, "").replace(",", ".");
-      } else {
-        s = s.replace(/,/g, "");
-      }
-    } else if (hasComma && !hasDot){
-      s = s.replace(/\./g, "").replace(",", ".");
-    } else {
-      s = s.replace(/,/g, "");
-    }
-
-    const n = Number(s);
-    return Number.isFinite(n) ? n : null;
-  }
-
-  function normalize(n){
-    if (!Number.isFinite(n)) return null;
-    return Number(n.toFixed(12));
-  }
-
-  // ---------- Tabs ----------
-  const tabsWrap = document.getElementById("tabs");
-  const tabButtons = Array.from(document.querySelectorAll(".tab"));
-  const panels = {
-    calc: document.getElementById("panel-calc"),
-    kdv: document.getElementById("panel-kdv"),
-    pct: document.getElementById("panel-pct"),
-    profit: document.getElementById("panel-profit"),
-    fx: document.getElementById("panel-fx"),
-    export: document.getElementById("panel-export"),
-    comments: document.getElementById("panel-comments"),
-  };
-
-  function setActiveTab(key){
-    tabButtons.forEach(b => b.classList.toggle("active", b.dataset.tab === key));
-    Object.entries(panels).forEach(([k, el]) => el.classList.toggle("active", k === key));
-  }
-
-  tabsWrap.addEventListener("pointerdown", (e) => {
-    const t = e.target.closest(".tab");
-    if (!t) return;
-    e.preventDefault();
-    setActiveTab(t.dataset.tab);
-  });
-
-  // ---------- Calculator ----------
-  const screen = document.getElementById("screen");
-  const grid = document.getElementById("grid");
-  const miniInfo = document.getElementById("miniInfo");
-  let expr = "0";
-
-  function setExpr(v){ expr = v; render(); }
-  function isPlainNumberExpression(s){ return /^[0-9.]+$/.test(s); }
-  function safeEval(expression){
-    if (!/^[0-9+\-*/%.]+$/.test(expression)) throw new Error("bad");
-    return Function('"use strict"; return (' + expression + ')')();
-  }
-
-  function render(){
-    if (expr === "Hata"){ screen.value = "Hata"; return; }
-    if (isPlainNumberExpression(expr)){
-      const n = Number(expr);
-      screen.value = Number.isFinite(n) ? fmtMoney(n, currencySel.value) : "Hata";
-      return;
-    }
-    screen.value = expr;
-  }
-
-  function append(ch){
-    const cur = expr;
-    if (cur === "Hata"){ setExpr("0"); return append(ch); }
-    if (cur === "0" && /[0-9]/.test(ch)) return setExpr(ch);
-
-    if (/[+\-*/%]$/.test(cur) && /[+\-*/%]/.test(ch)) return setExpr(cur.slice(0,-1) + ch);
-
-    if (ch === "."){
-      const part = cur.split(/[+\-*/%]/).pop();
-      if (part.includes(".")) return;
-    }
-    setExpr(cur + ch);
-  }
-
-  function backspace(){
-    if (expr === "Hata") return setExpr("0");
-    if (expr.length <= 1) return setExpr("0");
-    setExpr(expr.slice(0,-1));
-  }
-
-  function clearAll(){ setExpr("0"); miniInfo.textContent = "—"; }
-
-  function equals(){
-    try{
-      const res = normalize(safeEval(expr));
-      if (res === null) return setExpr("Hata");
-      setExpr(String(res));
-      miniInfo.textContent = "Sonuç hesaplandı";
-    } catch {
-      setExpr("Hata");
-      miniInfo.textContent = "Geçersiz ifade";
-    }
-  }
-
-  function handleKey(btn){
-    const action = btn.dataset.action;
-    const val = btn.dataset.value;
-    if (action === "clear") return clearAll();
-    if (action === "back") return backspace();
-    if (action === "equals") return equals();
-    if (val) return append(val);
-  }
-
-  grid.addEventListener("pointerdown", (e) => {
-    const btn = e.target.closest("button");
-    if (!btn) return;
-    e.preventDefault();
-    handleKey(btn);
-  });
-
-  window.addEventListener("keydown", (e) => {
-    const k = e.key;
-    if (/[0-9]/.test(k)) return append(k);
-    if (["+", "-", "*", "/", "%", "."].includes(k)) return append(k);
-    if (k === "Enter" || k === "=") return equals();
-    if (k === "Backspace") return backspace();
-    if (k === "Escape") return clearAll();
-  });
-
-  function screenNumber(){
-    if (isPlainNumberExpression(expr)){
-      const n = Number(expr);
-      return Number.isFinite(n) ? n : null;
-    }
-    try{
-      const res = normalize(safeEval(expr));
-      return res;
-    } catch {
-      return null;
-    }
-  }
-
-  currencySel.addEventListener("change", () => render());
-
-  // ---------- KDV ----------
-  const kdvRate = document.getElementById("kdvRate");
-  const kdvOut = document.getElementById("kdvOut");
-  const netToBrutBtn = document.getElementById("netToBrut");
-  const brutToNetBtn = document.getElementById("brutToNet");
-
-  function rate(){ return Number(kdvRate.value)/100; }
-
-  netToBrutBtn.addEventListener("pointerdown", (e) => {
-    e.preventDefault();
-    const net = screenNumber();
-    if (net === null) return (kdvOut.textContent = "Ekrandaki değer sayı değil.");
-    const brut = normalize(net * (1 + rate()));
-    const kdvTutar = normalize(brut - net);
-    setExpr(String(brut));
-    miniInfo.textContent = `KDV ${kdvRate.value}% uygulandı`;
-    kdvOut.innerHTML = `<b>Net:</b> ${fmtMoney(net, currencySel.value)} → <b>Brüt:</b> ${fmtMoney(brut, currencySel.value)} • <b>KDV:</b> ${fmtMoney(kdvTutar, currencySel.value)}`;
-  });
-
-  brutToNetBtn.addEventListener("pointerdown", (e) => {
-    e.preventDefault();
-    const brut = screenNumber();
-    if (brut === null) return (kdvOut.textContent = "Ekrandaki değer sayı değil.");
-    const net = normalize(brut / (1 + rate()));
-    const kdvTutar = normalize(brut - net);
-    setExpr(String(net));
-    miniInfo.textContent = `KDV ${kdvRate.value}% ayrıştırıldı`;
-    kdvOut.innerHTML = `<b>Brüt:</b> ${fmtMoney(brut, currencySel.value)} → <b>Net:</b> ${fmtMoney(net, currencySel.value)} • <b>KDV:</b> ${fmtMoney(kdvTutar, currencySel.value)}`;
-  });
-
-  // ---------- Percent ----------
-  const baseA = document.getElementById("baseA");
-  const percB = document.getElementById("percB");
-  const percOut = document.getElementById("percOut");
-  const aOfB = document.getElementById("aOfB");
-  const aPlusB = document.getElementById("aPlusB");
-  const aMinusB = document.getElementById("aMinusB");
-
-  function pctCalc(kind){
-    const A = parseLooseNumber(baseA.value);
-    const B = parseLooseNumber(percB.value);
-    if (A === null || B === null){
-      percOut.textContent = "A ve B'yi sayı olarak gir.";
-      return;
-    }
-    const p = B/100;
-    let res;
-    if (kind==="of") res = A*p;
-    if (kind==="plus") res = A*(1+p);
-    if (kind==="minus") res = A*(1-p);
-    res = normalize(res);
-
-    setExpr(String(res));
-    miniInfo.textContent = "Yüzde hesaplandı";
-
-    const label = kind==="of" ? "A'nın %B'si" : (kind==="plus" ? "A + %B" : "A - %B");
-    percOut.innerHTML = `<b>${label}:</b> A=${fmtMoney(A, currencySel.value)}, B=${B}% → <b>${fmtMoney(res, currencySel.value)}</b>`;
-  }
-
-  aOfB.addEventListener("pointerdown", (e)=>{e.preventDefault(); pctCalc("of");});
-  aPlusB.addEventListener("pointerdown", (e)=>{e.preventDefault(); pctCalc("plus");});
-  aMinusB.addEventListener("pointerdown", (e)=>{e.preventDefault(); pctCalc("minus");});
-
-  // ---------- Profit/Loss ----------
-  const cost = document.getElementById("cost");
-  const sell = document.getElementById("sell");
-  const profitOut = document.getElementById("profitOut");
-  const profitCalc = document.getElementById("profitCalc");
-  const swap = document.getElementById("swap");
-
-  function profit(){
-    const c = parseLooseNumber(cost.value);
-    const s = parseLooseNumber(sell.value);
-    if (c === null || s === null){
-      profitOut.textContent = "Maliyet ve Satış değerlerini sayı olarak gir.";
-      return;
-    }
-    const p = normalize(s - c);
-    const profitPct = c===0 ? null : normalize((p/c)*100);
-    const marginPct = s===0 ? null : normalize((p/s)*100);
-
-    setExpr(String(p));
-    miniInfo.textContent = "Kar/Zarar hesaplandı";
-    profitOut.innerHTML = `<b>Kâr:</b> ${fmtMoney(p, currencySel.value)} • <b>Kâr% (maliyet):</b> ${profitPct===null?"—":profitPct+"%"} • <b>Marj% (satış):</b> ${marginPct===null?"—":marginPct+"%"}`;
-  }
-
-  profitCalc.addEventListener("pointerdown", (e)=>{e.preventDefault(); profit();});
-  swap.addEventListener("pointerdown", (e)=>{
-    e.preventDefault();
-    const tmp = cost.value; cost.value = sell.value; sell.value = tmp;
-    profit();
-  });
-
-  // ---------- FX (Manual) ----------
-  const fxRate = document.getElementById("fxRate");
-  const fxUseUSDTRY = document.getElementById("fxUseUSDTRY");
-  const fxUseEURTRY = document.getElementById("fxUseEURTRY");
-  const fxAmount = document.getElementById("fxAmount");
-  const fxFrom = document.getElementById("fxFrom");
-  const fxTo = document.getElementById("fxTo");
-  const fxConvert = document.getElementById("fxConvert");
-  const fxOut = document.getElementById("fxOut");
-
-  fxUseUSDTRY.addEventListener("pointerdown", (e)=>{ e.preventDefault(); fxFrom.value="USD"; fxTo.value="TRY"; });
-  fxUseEURTRY.addEventListener("pointerdown", (e)=>{ e.preventDefault(); fxFrom.value="EUR"; fxTo.value="TRY"; });
-
-  fxConvert.addEventListener("pointerdown", (e)=>{
-    e.preventDefault();
-    const r = parseLooseNumber(fxRate.value);
-    const amt = parseLooseNumber(fxAmount.value);
-    if (r === null || r <= 0) return (fxOut.textContent = "Kur geçersiz. Örn: 35,50");
-    if (amt === null) return (fxOut.textContent = "Tutar geçersiz.");
-
-    const from = fxFrom.value;
-    const to = fxTo.value;
-
-    // Basit: girilen kur "1 USD/EUR = r TRY" gibi düşünülür.
-    // USD<->TRY veya EUR<->TRY çalışır. USD<->EUR için TRY köprü gibi.
-    const base = from; // USD veya EUR veya TRY
-    let result = null;
-
-    function toTRY(x){
-      if (base === "TRY") return x;
-      return x * r; // 1 base = r TRY
-    }
-    function fromTRY(x){
-      if (to === "TRY") return x;
-      return x / r;
-    }
-
-    if ((from === "USD" || from === "EUR") && to === "TRY"){
-      result = amt * r;
-    } else if (from === "TRY" && (to === "USD" || to === "EUR")){
-      result = amt / r;
-    } else if ((from === "USD" || from === "EUR") && (to === "USD" || to === "EUR")){
-      // USD->EUR: (USD->TRY) then (TRY->EUR) using same r (yaklaşık)
-      // Bu ekran basit deneme için: aynı r kullanıldığı için sadece yaklaşık olur.
-      const inTRY = amt * r;
-      result = inTRY / r;
-    } else {
-      result = amt; // fallback
-    }
-
-    fxOut.innerHTML = `<b>${amt}</b> ${from} ≈ <b>${normalize(result).toFixed(4)}</b> ${to}`;
-    setExpr(String(normalize(result)));
-    miniInfo.textContent = "Kur çevirildi";
-  });
-
-  // ---------- Export calculator ----------
-  const incoterm = document.getElementById("incoterm");
-  const expCur = document.getElementById("expCur");
-  const goodsValue = document.getElementById("goodsValue");
-  const freight = document.getElementById("freight");
-  const insurance = document.getElementById("insurance");
-  const inland = document.getElementById("inland");
-  const portFees = document.getElementById("portFees");
-  const commissionPct = document.getElementById("commissionPct");
-  const qty = document.getElementById("qty");
-  const unitPrice = document.getElementById("unitPrice");
-  const expCalc = document.getElementById("expCalc");
-  const expOut = document.getElementById("expOut");
-  const profitBase = document.getElementById("profitBase");
-  const targetProfitPct = document.getElementById("targetProfitPct");
-  const priceWithProfit = document.getElementById("priceWithProfit");
-
-  function computeFOB_CFR_CIF(goods, navlun, sig, term){
-    let FOB = goods, CFR = goods + navlun, CIF = goods + navlun + sig;
-
-    if (term === "FOB"){
-      FOB = goods;
-      CFR = FOB + navlun;
-      CIF = CFR + sig;
-    } else if (term === "CFR"){
-      CFR = goods;
-      FOB = CFR - navlun;
-      CIF = CFR + sig;
-    } else if (term === "CIF"){
-      CIF = goods;
-      CFR = CIF - sig;
-      FOB = CFR - navlun;
-    } else if (term === "EXW"){
-      FOB = goods;
-      CFR = goods + navlun;
-      CIF = CFR + sig;
-    }
-
-    return { FOB: normalize(FOB), CFR: normalize(CFR), CIF: normalize(CIF) };
-  }
-
-  function readExportInputs(){
-    const cur = expCur.value;
-    const term = incoterm.value;
-
-    let goods = parseLooseNumber(goodsValue.value);
-    const navlun = parseLooseNumber(freight.value) || 0;
-    const sig = parseLooseNumber(insurance.value) || 0;
-
-    const inl = parseLooseNumber(inland.value) || 0;
-    const port = parseLooseNumber(portFees.value) || 0;
-    const commPct = parseLooseNumber(commissionPct.value) || 0;
-
-    const q = parseLooseNumber(qty.value);
-    const up = parseLooseNumber(unitPrice.value);
-
-    if (q != null && up != null){
-      goods = q * up;
-    }
-
-    return {cur, term, goods, navlun, sig, inl, port, commPct, q};
-  }
-
-  function fmtPlain(n, cur){
-    return `${normalize(n).toFixed(4)} ${cur}`;
-  }
-
-  expCalc.addEventListener("pointerdown", (e)=>{
-    e.preventDefault();
-
-    const {cur, term, goods, navlun, sig, inl, port, commPct, q} = readExportInputs();
-    if (goods == null){
-      expOut.textContent = "Mal bedeli (veya miktar + birim fiyat) gir.";
-      return;
-    }
-
-    const totals = computeFOB_CFR_CIF(goods, navlun, sig, term);
-
-    // Komisyonu mal bedeli üzerinden alıyoruz (deneme sürümü, net ve stabil)
-    const commissionAmount = normalize(goods * (commPct/100));
-
-    const FOB_cost = normalize(totals.FOB + inl + port + commissionAmount);
-    const CIF_cost = normalize(totals.CIF + inl + port + commissionAmount);
-
-    let unit = "";
-    if (q != null && q !== 0){
-      unit = `<br><b>Birim maliyet:</b> FOB ${normalize(FOB_cost/q).toFixed(4)} ${cur} • CIF ${normalize(CIF_cost/q).toFixed(4)} ${cur}`;
-    }
-
-    expOut.innerHTML =
-      `<b>${cur}</b> bazında (girdi incoterm: <b>${term}</b>)<br>
-       <b>FOB:</b> ${fmtPlain(totals.FOB,cur)}<br>
-       <b>CFR:</b> ${fmtPlain(totals.CFR,cur)}<br>
-       <b>CIF:</b> ${fmtPlain(totals.CIF,cur)}<br>
-       <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:10px 0">
-       <b>Masraflar:</b> İç nakliye ${fmtPlain(inl,cur)} • Liman ${fmtPlain(port,cur)} • Komisyon ${fmtPlain(commissionAmount,cur)}<br>
-       <b>Toplam Maliyet (FOB baz):</b> ${fmtPlain(FOB_cost,cur)}<br>
-       <b>Toplam Maliyet (CIF baz):</b> ${fmtPlain(CIF_cost,cur)}
-       ${unit}`;
-
-    setExpr(String(CIF_cost));
-    miniInfo.textContent = "İhracat maliyeti hesaplandı";
-  });
-
-  priceWithProfit.addEventListener("pointerdown", (e)=>{
-    e.preventDefault();
-
-    const {cur, term, goods, navlun, sig, inl, port, commPct, q} = readExportInputs();
-    const tp = parseLooseNumber(targetProfitPct.value);
-
-    if (goods == null){
-      expOut.textContent = "Mal bedeli (veya miktar + birim fiyat) gir.";
-      return;
-    }
-    if (tp == null){
-      expOut.textContent = "Hedef kâr % gir (örn 12).";
-      return;
-    }
-
-    const totals = computeFOB_CFR_CIF(goods, navlun, sig, term);
-    const commissionAmount = normalize(goods * (commPct/100));
-    const FOB_cost = normalize(totals.FOB + inl + port + commissionAmount);
-    const CIF_cost = normalize(totals.CIF + inl + port + commissionAmount);
-
-    const base = profitBase.value; // FOB / CIF
-    const baseCost = (base === "FOB") ? FOB_cost : CIF_cost;
-
-    const sale = normalize(baseCost * (1 + tp/100));
-
-    let unit = "";
-    if (q != null && q !== 0){
-      unit = ` • <b>Birim satış:</b> ${normalize(sale/q).toFixed(4)} ${cur}`;
-    }
-
-    expOut.innerHTML =
-      `<b>Hedef satış fiyatı</b> (${base} baz, kâr%: ${tp})<br>
-       <b>Toplam maliyet:</b> ${fmtPlain(baseCost,cur)}<br>
-       <b>Satış fiyatı:</b> ${fmtPlain(sale,cur)}${unit}`;
-
-    setExpr(String(sale));
-    miniInfo.textContent = "Hedef satış hesaplandı";
-  });
-
-  // Register service worker (PWA)
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js");
-  }
-
-  render();
-</script>
-
-<!-- ================= YORUMLAR + FIREBASE (TEK BLOK) ================= -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-  import {
-    getFirestore, collection, addDoc,
-    serverTimestamp, query, orderBy, limit, onSnapshot
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyClINZcNN-ULMNa0IXb1Oh8dRUyM6XLYwU",
-    authDomain: "jml-hesap.firebaseapp.com",
-    projectId: "jml-hesap",
-    storageBucket: "jml-hesap.firebasestorage.app",
-    messagingSenderId: "329153387130",
-    appId: "1:329153387130:web:c3f9224cabb57488a9b9c3"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  const cName = document.getElementById("cName");
-  const cText = document.getElementById("cText");
-  const cSend = document.getElementById("cSend");
-  const cStatus = document.getElementById("cStatus");
-  const cList = document.getElementById("cList");
-
-  function esc(s){
-    return String(s ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-
-  async function boot(){
-    try{
-      await signInAnonymously(auth);
-      cStatus.textContent = "Bağlandı. Yorum yazabilirsin.";
-    }catch(e){
-      cStatus.textContent = "Bağlanamadı (Auth kapalı olabilir).";
-      console.error(e);
-      return;
-    }
-
-    const q = query(collection(db, "comments"), orderBy("createdAt", "desc"), limit(50));
-    onSnapshot(q, (snap) => {
-      if (snap.empty){
-        cList.textContent = "Henüz yorum yok.";
-        return;
-      }
-
-      const items = [];
-      snap.forEach((doc) => {
-        const d = doc.data() || {};
-        const name = (d.name && String(d.name).trim()) ? String(d.name).trim() : "Anonim";
-        const text = String(d.text || "");
-        items.push(`
-          <div class="listItem">
-            <b>${esc(name)}</b>
-            <div style="margin-top:6px;opacity:.86;white-space:pre-wrap">${esc(text)}</div>
-          </div>
-        `);
-      });
-      cList.innerHTML = items.join("");
-    });
-
-    let lastSend = 0;
-    cSend.addEventListener("pointerdown", async (e) => {
-      e.preventDefault();
-      const now = Date.now();
-      if (now - lastSend < 2500){
-        cStatus.textContent = "Biraz yavaş 🙂";
-        return;
-      }
-      lastSend = now;
-
-      const text = (cText.value || "").trim();
-      const name = (cName.value || "").trim().slice(0, 40);
-
-      if (!text) return (cStatus.textContent = "Yorum boş olamaz.");
-      if (text.length > 500) return (cStatus.textContent = "Max 500 karakter.");
-
-      try{
-        await addDoc(collection(db, "comments"), {
-          name,
-          text,
-          createdAt: serverTimestamp()
-        });
-        cText.value = "";
-        cStatus.textContent = "Gönderildi ✅";
-      }catch(err){
-        cStatus.textContent = "Gönderilemedi (Rules/Firestore).";
-        console.error(err);
-      }
-    });
-  }
-
-  boot();
-</script>
-<!-- ================================================================ -->
-
+  <script src="./app.js" defer></script>
+  <script type="module" src="./firebase-comments.js"></script>
 </body>
 </html>

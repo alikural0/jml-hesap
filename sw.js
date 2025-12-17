@@ -1,4 +1,4 @@
-const CACHE = "jml-v4";
+const CACHE = "jml-v4.1";
 const ASSETS = [
   "./",
   "./index.html",
@@ -53,4 +53,5 @@ self.addEventListener("fetch", (event) => {
     }))
   );
 });
+
 

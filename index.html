@@ -14,8 +14,6 @@
     :root{
       --bg:#111216;
       --bg2:#0e0f12;
-      --card:rgba(255,255,255,.075);
-      --card2:rgba(255,255,255,.04);
       --stroke:rgba(255,255,255,.16);
       --stroke2:rgba(255,255,255,.12);
       --text:rgba(255,255,255,.93);
@@ -51,13 +49,13 @@
 
     .topbar{
       position:relative;
+      z-index:10;
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       padding:14px;
       border-radius:var(--r);
       background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
       border:1px solid var(--stroke2);
       box-shadow:var(--shadow);
-      z-index: 120; 
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
@@ -119,63 +117,6 @@
       white-space:nowrap;
       user-select:none;
     }
-
-    .menuBackdrop{
-      display:none;
-      position:fixed; inset:0;
-      background:rgba(0,0,0,.35);
-      backdrop-filter: blur(2px);
-      z-index:110;
-    }
-    .menuBackdrop.open{display:block}
-
-    .menu{
-      position:fixed;
-      top:90px; 
-      right:16px;
-      width:250px;
-      padding:10px;
-      border-radius:18px;
-      background:rgba(26,28,33,.96);
-      border:1px solid var(--stroke2);
-      box-shadow:0 34px 90px rgba(0,0,0,.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      display:none;
-      z-index:130;
-    }
-    .menu.open{display:block}
-    .menu .mTitle{
-      padding:10px 10px 8px;
-      font-size:12px;
-      color:var(--muted2);
-      letter-spacing:.9px;
-      text-transform:uppercase;
-    }
-    .menu button{
-      width:100%;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid transparent;
-      background:transparent;
-      color:var(--text);
-      text-align:left;
-      font-size:14px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .menu button:hover{
-      background:rgba(255,255,255,.09);
-      border-color:rgba(255,255,255,.10);
-    }
-    .menu button.active{
-      background:rgba(255,255,255,.13);
-      border-color:rgba(255,255,255,.16);
-    }
-    .menu small{color:var(--muted2); font-size:12px}
 
     .card{
       border-radius:var(--r);
@@ -284,19 +225,75 @@
     .listItem{border-bottom:1px solid rgba(255,255,255,.08); padding:10px 0}
     .listItem:last-child{border-bottom:none}
 
+    /* ✅ MENÜ + BACKDROP (Kesin çözüm) */
+    .menuBackdrop{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.35);
+      z-index:9998;
+    }
+    .menuBackdrop.open{display:block}
+
+    .menu{
+      display:none;
+      position:fixed;
+      top:90px;
+      right:16px;
+      width:min(280px,92vw);
+      padding:10px;
+      border-radius:18px;
+      background:rgba(26,28,33,.96);
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:0 34px 90px rgba(0,0,0,.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index:9999;
+    }
+    .menu.open{display:block}
+    .menu .mTitle{
+      padding:10px 10px 8px;
+      font-size:12px;
+      color:var(--muted2);
+      letter-spacing:.9px;
+      text-transform:uppercase;
+    }
+    .menu button{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid transparent;
+      background:transparent;
+      color:var(--text);
+      text-align:left;
+      font-size:14px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .menu button:hover{
+      background:rgba(255,255,255,.09);
+      border-color:rgba(255,255,255,.10);
+    }
+    .menu button.active{
+      background:rgba(255,255,255,.13);
+      border-color:rgba(255,255,255,.16);
+    }
+    .menu small{color:var(--muted2); font-size:12px}
+
     @media (max-width:420px){
       .brand img{height:36px}
       .chip{display:none}
       .screen{font-size:26px; height:72px}
       button.key{height:54px}
-      .menu{right:10px; width:min(92vw, 280px)}
+      .menu{right:10px}
     }
   </style>
 </head>
 
 <body>
-  <div class="menuBackdrop" id="menuBackdrop"></div>
-
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
@@ -314,19 +311,6 @@
           <option value="USD">$ USD</option>
         </select>
         <div class="chip">Mobil: Dokun • Enter: =</div>
-      </div>
-
-      <!-- Menü -->
-      <div class="menu" id="menu">
-        <div class="mTitle">Menü</div>
-        <button data-tab="calc" class="active">Hesap <small>Temel</small></button>
-        <button data-tab="kdv">KDV <small>Net/Brüt</small></button>
-        <button data-tab="pct">Yüzde <small>+ / −</small></button>
-        <button data-tab="profit">Kar / Zarar <small>Marj</small></button>
-        <button data-tab="fx">Kur <small>Manuel</small></button>
-        <button data-tab="export">İhracat <small>FOB/CIF</small></button>
-        <button data-tab="raise">Zam Hesaplama <small>Oran</small></button>
-        <button data-tab="comments">Yorumlar <small>Firebase</small></button>
       </div>
     </div>
 
@@ -489,7 +473,7 @@
         <div class="hint">CFR = FOB + Navlun • CIF = CFR + Sigorta</div>
       </div>
 
-      <!-- ZAM HESAPLAMA -->
+      <!-- ZAM -->
       <div class="panel" id="panel-raise">
         <div class="row">
           <input id="oldSalary" class="field" type="text" inputmode="decimal" placeholder="Mevcut maaş" />
@@ -500,7 +484,8 @@
         </div>
         <div class="out" id="raiseOut">Maaşları gir.</div>
         <div class="hint">
-          %20: “Ağanın Eli tutulmaz” • %30+: “Personel mutlu, enflasyon düşünsün” • %40+: “Personel çıldırdı ofisten çıkmıyor” • %50+: “Moris bey iyi misiniz?”
+          %20: “Ağanın Eli tutulmaz” • %30+: “Personel mutlu, enflasyon düşünsün”
+          • %40+: “Personel çıldırdı ofisten çıkmıyor” • %50+: “Moris bey iyi misiniz?”
         </div>
       </div>
 
@@ -523,8 +508,22 @@
     </div>
   </div>
 
+  <!-- ✅ Backdrop + Menu BODY EN ALTTA -->
+  <div class="menuBackdrop" id="menuBackdrop"></div>
+
+  <div class="menu" id="menu">
+    <div class="mTitle">Menü</div>
+    <button data-tab="calc" class="active">Hesap <small>Temel</small></button>
+    <button data-tab="kdv">KDV <small>Net/Brüt</small></button>
+    <button data-tab="pct">Yüzde <small>+ / −</small></button>
+    <button data-tab="profit">Kar / Zarar <small>Marj</small></button>
+    <button data-tab="fx">Kur <small>Manuel</small></button>
+    <button data-tab="export">İhracat <small>FOB/CIF</small></button>
+    <button data-tab="raise">Zam Hesaplama <small>Oran</small></button>
+    <button data-tab="comments">Yorumlar <small>Firebase</small></button>
+  </div>
+
   <script src="./app.js" defer></script>
   <script type="module" src="./firebase-comments.js"></script>
 </body>
 </html>
-

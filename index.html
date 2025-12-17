@@ -276,6 +276,8 @@
       <button class="tab" data-tab="profit" type="button">Kar/Zarar</button>
       <button class="tab" data-tab="fx" type="button">Kur</button>
       <button class="tab" data-tab="export" type="button">İhracat</button>
+      <button class="tab" data-tab="comments" type="button">Yorumlar</button>
+
     </div>
 
     <!-- HESAP -->
@@ -447,6 +449,24 @@
         Basit mantık: <b>CFR = FOB + Navlun</b>, <b>CIF = CFR + Sigorta</b>. EXW için “mal bedeli”ni baz alır.
       </div>
     </div>
+<!-- YORUMLAR -->
+<div class="panel" id="panel-comments">
+  <div class="row">
+    <input id="cName" class="field" type="text" placeholder="İsim (opsiyonel)" />
+  </div>
+
+  <div class="row" style="margin-top:10px">
+    <input id="cText" class="field" type="text" maxlength="500" placeholder="Yorum yaz (max 500 karakter)..." />
+    <button class="btn" id="cSend" type="button">Gönder</button>
+  </div>
+
+  <div class="out" id="cStatus">Bağlanıyor…</div>
+  <div class="out" id="cList" style="margin-top:10px">Yorumlar yükleniyor…</div>
+
+  <div class="hint">
+    Herkesin yazdığı yorumlar anlık görünür.
+  </div>
+</div>
 
   </div>
 </div>
@@ -957,5 +977,211 @@
   // Init
   render();
 </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    getFirestore, collection, addDoc,
+    serverTimestamp, query, orderBy, limit, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyClINZcNN-ULMNa0IXb1Oh8dRUyM6XLYwU",
+    authDomain: "jml-hesap.firebaseapp.com",
+    projectId: "jml-hesap",
+    storageBucket: "jml-hesap.firebasestorage.app",
+    messagingSenderId: "329153387130",
+    appId: "1:329153387130:web:c3f9224cabb57488a9b9c3"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // ---- DOM ----
+  const cText = document.getElementById("cText");
+  const cName = document.getElementById("cName");
+  const cSend = document.getElementById("cSend");
+  const cStatus = document.getElementById("cStatus");
+  const cList = document.getElementById("cList");
+
+  // Anonymous login
+  signInAnonymously(auth)
+    .then(() => cStatus.textContent = "Bağlandı. Yorum yazabilirsin.")
+    .catch(() => cStatus.textContent = "Firebase bağlantı hatası.");
+
+  // Live comments
+  const q = query(
+    collection(db, "comments"),
+    orderBy("createdAt", "desc"),
+    limit(50)
+  );
+
+  onSnapshot(q, snap => {
+    if (snap.empty) {
+      cList.innerHTML = "Henüz yorum yok.";
+      return;
+    }
+    cList.innerHTML = snap.docs.map(d => {
+      const x = d.data();
+      return `
+        <div style="border-bottom:1px solid rgba(255,255,255,.08); padding:8px 0">
+          <b>${x.name || "Anonim"}</b><br>
+          <span style="opacity:.8">${x.text}</span>
+        </div>`;
+    }).join("");
+  });
+
+  // Send comment
+  cSend?.addEventListener("click", async () => {
+    const text = cText.value.trim();
+    if (!text) return;
+
+    await addDoc(collection(db, "comments"), {
+      name: cName.value.trim().slice(0, 40),
+      text,
+      createdAt: serverTimestamp()
+    });
+
+    cText.value = "";
+  });
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    getFirestore, collection, addDoc,
+    serverTimestamp, query, orderBy, limit, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyClINZcNN-ULMNa0IXb1Oh8dRUyM6XLYwU",
+    authDomain: "jml-hesap.firebaseapp.com",
+    projectId: "jml-hesap",
+    storageBucket: "jml-hesap.firebasestorage.app",
+    messagingSenderId: "329153387130",
+    appId: "1:329153387130:web:c3f9224cabb57488a9b9c3"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // ---- DOM ----
+  const cText = document.getElementById("cText");
+  const cName = document.getElementById("cName");
+  const cSend = document.getElementById("cSend");
+  const cStatus = document.getElementById("cStatus");
+  const cList = document.getElementById("cList");
+
+  // Anonymous login
+  signInAnonymously(auth)
+    .then(() => cStatus.textContent = "Bağlandı. Yorum yazabilirsin.")
+    .catch(() => cStatus.textContent = "Firebase bağlantı hatası.");
+
+  // Live comments
+  const q = query(
+    collection(db, "comments"),
+    orderBy("createdAt", "desc"),
+    limit(50)
+  );
+
+  onSnapshot(q, snap => {
+    if (snap.empty) {
+      cList.innerHTML = "Henüz yorum yok.";
+      return;
+    }
+    cList.innerHTML = snap.docs.map(d => {
+      const x = d.data();
+      return `
+        <div style="border-bottom:1px solid rgba(255,255,255,.08); padding:8px 0">
+          <b>${x.name || "Anonim"}</b><br>
+          <span style="opacity:.8">${x.text}</span>
+        </div>`;
+    }).join("");
+  });
+
+  // Send comment
+  cSend?.addEventListener("click", async () => {
+    const text = cText.value.trim();
+    if (!text) return;
+
+    await addDoc(collection(db, "comments"), {
+      name: cName.value.trim().slice(0, 40),
+      text,
+      createdAt: serverTimestamp()
+    });
+
+    cText.value = "";
+  });
+</script>
+<!-- ================= YORUMLAR + FIREBASE ================= -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    getFirestore, collection, addDoc,
+    serverTimestamp, query, orderBy, limit, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyClINZcNN-ULMNa0IXb1Oh8dRUyM6XLYwU",
+    authDomain: "jml-hesap.firebaseapp.com",
+    projectId: "jml-hesap",
+    storageBucket: "jml-hesap.firebasestorage.app",
+    messagingSenderId: "329153387130",
+    appId: "1:329153387130:web:c3f9224cabb57488a9b9c3"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const cName = document.getElementById("cName");
+  const cText = document.getElementById("cText");
+  const cSend = document.getElementById("cSend");
+  const cStatus = document.getElementById("cStatus");
+  const cList = document.getElementById("cList");
+
+  signInAnonymously(auth)
+    .then(() => cStatus.textContent = "Bağlandı. Yorum yazabilirsin.")
+    .catch(() => cStatus.textContent = "Firebase bağlantı hatası.");
+
+  const q = query(
+    collection(db, "comments"),
+    orderBy("createdAt", "desc"),
+    limit(50)
+  );
+
+  onSnapshot(q, snap => {
+    if (snap.empty) {
+      cList.innerHTML = "Henüz yorum yok.";
+      return;
+    }
+    cList.innerHTML = snap.docs.map(d => {
+      const x = d.data();
+      return `
+        <div style="border-bottom:1px solid rgba(255,255,255,.08); padding:8px 0">
+          <b>${x.name || "Anonim"}</b><br>
+          <span style="opacity:.8">${x.text}</span>
+        </div>`;
+    }).join("");
+  });
+
+  cSend?.addEventListener("click", async () => {
+    const text = cText.value.trim();
+    if (!text) return;
+
+    await addDoc(collection(db, "comments"), {
+      name: cName.value.trim().slice(0, 40),
+      text,
+      createdAt: serverTimestamp()
+    });
+
+    cText.value = "";
+  });
+</script>
+<!-- ======================================================= -->
+
 </body>
 </html>

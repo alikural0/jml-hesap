@@ -259,6 +259,66 @@
       .screen{font-size:26px; height:72px}
       button.key{height:54px}
     }
+ /* ==== PREMIUM UPGRADE PACK ==== */
+
+/* daha “cam” kartlar */
+.topbar, .card{
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* yumuşak gölge + net border */
+.card{
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow: 0 24px 90px rgba(0,0,0,.70);
+}
+
+/* sekmeler: daha modern */
+.tab{
+  background: rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.12);
+}
+.tab.active{
+  background: rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.20);
+}
+
+/* input ve ekranlar daha net */
+.field, .screen{
+  border-color: rgba(255,255,255,.14);
+  background: rgba(0,0,0,.30);
+}
+
+/* butonlar daha “premium basma hissi” */
+button.key, .btn{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 14px 36px rgba(0,0,0,.38);
+}
+button.key:hover, .btn:hover{
+  transform: translateY(-1px);
+}
+button.key:active, .btn:active{
+  transform: translateY(0) scale(.99);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 10px 22px rgba(0,0,0,.30);
+}
+
+/* sonuç alanı daha “kart” */
+.out{
+  background:
+    radial-gradient(800px 320px at 15% 0%, rgba(255,255,255,.10), transparent 60%),
+    rgba(0,0,0,.22);
+  border-color: rgba(255,255,255,.14);
+}
+
+/* logo keskinliği */
+.brand img{
+  image-rendering: -webkit-optimize-contrast;
+}
+
+  
   </style>
 </head>
 
@@ -282,7 +342,7 @@
     </div>
 
     <div class="card">
-      <div class="tabs" id="tabs">
+      <div class="ink" id="tabInk"></div>
         <button class="tab active" data-tab="calc" type="button">Hesap</button>
         <button class="tab" data-tab="kdv" type="button">KDV</button>
         <button class="tab" data-tab="pct" type="button">Yüzde</button>
@@ -474,3 +534,4 @@
   <script type="module" src="./firebase-comments.js"></script>
 </body>
 </html>
+

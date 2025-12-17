@@ -1,8 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import {
+  getFirestore, collection, addDoc, serverTimestamp,
+  query, orderBy, limit, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-// ---- Firebase config ----
 const firebaseConfig = {
   apiKey: "AIzaSyClINZcNN-ULMNa0IXb1Oh8dRUyM6XLYwU",
   authDomain: "jml-hesap.firebaseapp.com",
@@ -16,7 +18,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ---- DOM ----
+// DOM
 const cName = document.getElementById("cName");
 const cText = document.getElementById("cText");
 const cSend = document.getElementById("cSend");
@@ -29,76 +31,96 @@ function esc(s){
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+    .replaceAll("'","&#39;");
 }
 
-function showErr(prefix, err){
-  console.error(prefix, err);
-  const msg = (err && (err.message || err.code)) ? `${err.code ? err.code + " — " : ""}${err.message || ""}` : String(err);
-  cStatus.textContent = `${prefix}: ${msg}`;
-}
+function setStatus(msg){ if(cStatus) cStatus.textContent = msg; }
 
-async function boot(){
+async function ensureAuth(){
   try{
-    await signInAnonymously(auth);
-    cStatus.textContent = "Bağlandı. Yorum yazabilirsin.";
+    if(auth.currentUser) return auth.currentUser;
+    setStatus("Bağlanıyor…");
+    const res = await signInAnonymously(auth);
+    setStatus("Bağlandı. Yorum yazabilirsin.");
+    return res.user;
   }catch(err){
-    showErr("Auth hata", err);
+    console.error(err);
+    setStatus("Bağlanamadı (Auth kapalı olabilir).");
+    throw err;
+  }
+}
+
+async function sendComment(){
+  const name = (cName?.value || "").trim().slice(0, 40);
+  const text = (cText?.value || "").trim().slice(0, 500);
+
+  if(!text){
+    setStatus("Yorum boş olamaz.");
     return;
   }
 
-  const q = query(collection(db, "comments"), orderBy("createdAt", "desc"), limit(50));
-
-  onSnapshot(q, (snap) => {
-    if (snap.empty){
-      cList.textContent = "Henüz yorum yok.";
-      return;
-    }
-    const items = [];
-    snap.forEach((doc) => {
-      const d = doc.data() || {};
-      const name = (d.name && String(d.name).trim()) ? String(d.name).trim() : "Anonim";
-      const text = String(d.text || "");
-      items.push(`
-        <div class="listItem">
-          <b>${esc(name)}</b>
-          <div style="margin-top:6px;opacity:.86;white-space:pre-wrap">${esc(text)}</div>
-        </div>
-      `);
+  try{
+    await ensureAuth();
+    await addDoc(collection(db, "comments"), {
+      name: name || "Anonim",
+      text,
+      createdAt: serverTimestamp(),
+      ua: navigator.userAgent || ""
     });
-    cList.innerHTML = items.join("");
-  }, (err) => {
-    showErr("Okuma (Rules/Firestore) hata", err);
-  });
-
-  let lastSend = 0;
-  cSend.addEventListener("pointerdown", async (e) => {
-    e.preventDefault();
-    const now = Date.now();
-    if (now - lastSend < 2500){
-      cStatus.textContent = "Biraz yavaş 🙂";
-      return;
-    }
-    lastSend = now;
-
-    const text = (cText.value || "").trim();
-    const name = (cName.value || "").trim().slice(0, 40);
-
-    if (!text) return (cStatus.textContent = "Yorum boş olamaz.");
-    if (text.length > 500) return (cStatus.textContent = "Max 500 karakter.");
-
-    try{
-      await addDoc(collection(db, "comments"), {
-        name,
-        text,
-        createdAt: serverTimestamp()
-      });
-      cText.value = "";
-      cStatus.textContent = "Gönderildi ✅";
-    }catch(err){
-      showErr("Yazma (Rules) hata", err);
-    }
-  });
+    if(cText) cText.value = "";
+    setStatus("Gönderildi ✅");
+    setTimeout(() => setStatus("Bağlandı. Yorum yazabilirsin."), 900);
+  }catch(err){
+    console.error(err);
+    setStatus("Gönderilemedi (Rules/Auth).");
+  }
 }
 
-boot();
+cSend?.addEventListener("click", sendComment);
+cText?.addEventListener("keydown", (e) => {
+  if(e.key === "Enter") sendComment();
+});
+
+function renderList(docs){
+  if(!cList) return;
+  if(docs.length === 0){
+    cList.innerHTML = "Henüz yorum yok.";
+    return;
+  }
+
+  cList.innerHTML = docs.map(d => {
+    const data = d.data();
+    const n = esc(data.name || "Anonim");
+    const t = esc(data.text || "");
+    let time = "";
+    try{
+      const dt = data.createdAt?.toDate?.();
+      if(dt) time = new Intl.DateTimeFormat("tr-TR", { dateStyle:"short", timeStyle:"short" }).format(dt);
+    }catch{}
+    return `
+      <div class="listItem">
+        <div style="display:flex;justify-content:space-between;gap:10px">
+          <b>${n}</b>
+          <span style="color:rgba(255,255,255,.45);font-size:12px">${esc(time)}</span>
+        </div>
+        <div style="margin-top:6px;color:rgba(255,255,255,.88);line-height:1.5">${t}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+(async () => {
+  try{
+    await ensureAuth();
+    const q = query(collection(db, "comments"), orderBy("createdAt", "desc"), limit(50));
+    onSnapshot(q, (snap) => {
+      renderList(snap.docs);
+    }, (err) => {
+      console.error(err);
+      setStatus("Yorumlar alınamadı (Rules).");
+      if(cList) cList.textContent = "Kur verisi yok.";
+    });
+  }catch{
+    // status already set
+  }
+})();

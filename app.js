@@ -1,13 +1,18 @@
 /* JML Hesap • V5.0
-   - Splash 2sn (splash.png varsa birebir, yoksa logo)
+   - Splash 2sn (splash.png)
    - Sonra Ana Panel (Home)
    - Home’dan tıklanınca panel geçişi
    - Menü (☰) ve backdrop
-   - Hesap makineleri + hesap modülleri
+   - Hesap makinesi + modüller
+   - Firebase yorumlar: firebase-comments.js içinden initFirebaseComments çağrılır
 */
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => Array.from(document.querySelectorAll(s));
+const on = (sel, ev, fn) => {
+  const el = $(sel);
+  if (el) el.addEventListener(ev, fn);
+};
 
 const state = {
   currency: "TRY",
@@ -20,12 +25,16 @@ function setBodyMode(tab){
 }
 
 function openMenu(){
-  $("#menuBackdrop").classList.add("open");
-  $("#menu").classList.add("open");
+  const bd = $("#menuBackdrop");
+  const m = $("#menu");
+  if (bd) bd.classList.add("open");
+  if (m) m.classList.add("open");
 }
 function closeMenu(){
-  $("#menuBackdrop").classList.remove("open");
-  $("#menu").classList.remove("open");
+  const bd = $("#menuBackdrop");
+  const m = $("#menu");
+  if (bd) bd.classList.remove("open");
+  if (m) m.classList.remove("open");
 }
 
 function setActiveMenuButton(tab){
@@ -33,7 +42,6 @@ function setActiveMenuButton(tab){
 }
 
 function showPanel(tab){
-  // tab -> panel id map
   const map = {
     home: "panel-home",
     calc: "panel-calc",
@@ -55,12 +63,10 @@ function showPanel(tab){
   setActiveMenuButton(tab);
   closeMenu();
 
-  // küçük info
   if (tab === "calc") updateMiniInfo();
 }
 
 function splashThenHome(){
-  // 2sn splash
   setTimeout(() => {
     const splash = $("#splash");
     if (splash) splash.style.display = "none";
@@ -75,28 +81,20 @@ function parseSmartNumber(input){
   let s = input.trim();
   if (!s) return NaN;
 
-  // Remove currency symbols/spaces
   s = s.replace(/[₺$€£\s]/g, "");
 
-  // If contains both . and , decide decimal by last occurrence
   const lastDot = s.lastIndexOf(".");
   const lastComma = s.lastIndexOf(",");
 
   if (lastDot !== -1 && lastComma !== -1){
     if (lastComma > lastDot){
-      // 1.234,56 -> thousands '.' remove, decimal ',' -> '.'
       s = s.replace(/\./g, "").replace(/,/g, ".");
     } else {
-      // 1,234.56 -> thousands ',' remove
       s = s.replace(/,/g, "");
     }
   } else if (lastComma !== -1){
-    // treat comma as decimal if looks like decimal
-    // 123,45 -> decimal
-    // 1.234,56 handled above
     s = s.replace(/\./g, "").replace(/,/g, ".");
   } else {
-    // only dot or none: remove thousands commas just in case
     s = s.replace(/,/g, "");
   }
 
@@ -125,26 +123,19 @@ function formatMoney(n, digits=2){
 /* ---------- Calculator ---------- */
 
 function sanitizeExprToEval(expr){
-  // allowed: digits, dot, operators + - * / % parentheses
-  // our UI supplies safe tokens. Still sanitize:
-  const s = expr
+  return expr
     .replace(/×/g, "*")
     .replace(/÷/g, "/")
     .replace(/−/g, "-")
     .replace(/[^\d.+\-*/()%]/g, "");
-  return s;
 }
 
 function evalExpr(expr){
   const s = sanitizeExprToEval(expr);
 
-  // block dangerous patterns
   if (!/^[\d.+\-*/()%]*$/.test(s)) return NaN;
-
-  // Avoid empty
   if (!s || s === "." || s === "-" || s === "+") return NaN;
 
-  // Use Function on sanitized math-only string
   try {
     // eslint-disable-next-line no-new-func
     const v = Function(`"use strict"; return (${s});`)();
@@ -155,31 +146,21 @@ function evalExpr(expr){
 }
 
 function setScreenValueText(text){
-  $("#screen").value = text;
+  const scr = $("#screen");
+  if (scr) scr.value = text;
 }
 
 function setExpr(newExpr){
   state.expr = newExpr;
-  // show raw expr but prettify operators for UI
   setScreenValueText(prettyExprForScreen(newExpr));
   updateMiniInfo();
 }
 
 function prettyExprForScreen(expr){
-  // Replace * / - with nicer display where suitable
   return expr
     .replace(/\*/g, "×")
     .replace(/\//g, "÷")
     .replace(/-/g, "−");
-}
-
-function getCurrentNumberFromScreen(){
-  // if expression has operators, try last token; else parse whole
-  const raw = state.expr;
-  const m = raw.match(/(\d+(\.\d+)?)$/);
-  if (m) return Number(m[1]);
-  const v = parseSmartNumber(raw);
-  return v;
 }
 
 function updateMiniInfo(){
@@ -195,14 +176,11 @@ function calcInputToken(token){
 
   if (e === "0" && /[0-9]/.test(token)) e = token;
   else if (token === "."){
-    // prevent two dots in same number token
     const lastNum = e.split(/[\+\-\*\/%]/).pop() ?? "";
     if (!lastNum.includes(".")) e += ".";
   } else {
-    // operators
     const ops = "+-*/%";
     if (ops.includes(token)){
-      // avoid double operator
       if (ops.includes(e.slice(-1))) e = e.slice(0, -1) + token;
       else e += token;
     } else {
@@ -229,23 +207,28 @@ function calcBackspace(){
 function calcEquals(){
   const v = evalExpr(state.expr);
   if (!Number.isFinite(v)) return;
+
   state.lastResult = v;
-  // show formatted number as expression
   setExpr(String(v));
-  // screen prettier number
+
+  // ekranda daha düzgün görünmesi için
   setScreenValueText(formatNumber(v, 6));
   updateMiniInfo();
 }
 
-/* ---------- Tabs / Home wiring ---------- */
+/* ---------- Menu / Home wiring ---------- */
 
 function bindMenu(){
-  $("#menuBtn").addEventListener("click", () => {
-    const isOpen = $("#menu").classList.contains("open");
+  on("#menuBtn", "click", () => {
+    const menu = $("#menu");
+    if (!menu) return;
+    const isOpen = menu.classList.contains("open");
     if (isOpen) closeMenu(); else openMenu();
   });
-  $("#menuBackdrop").addEventListener("click", closeMenu);
 
+  on("#menuBackdrop", "click", closeMenu);
+
+  // Menü butonları
   $$("#menu button").forEach(btn => {
     btn.addEventListener("click", () => {
       const tab = btn.dataset.tab;
@@ -253,12 +236,16 @@ function bindMenu(){
     });
   });
 
-  $("#homeOpenMenu").addEventListener("click", openMenu);
-  $("#homeCloseApp").addEventListener("click", () => showPanel("home"));
+  // Home üst mini butonlar
+  on("#homeOpenMenu", "click", openMenu);
+  on("#homeCloseApp", "click", () => showPanel("home"));
 
-  // Home list click -> show panel
+  // Home liste
   $$(".homeRow").forEach(row => {
-    row.addEventListener("click", () => showPanel(row.dataset.tab));
+    row.addEventListener("click", () => {
+      const t = row.dataset.tab;
+      if (t) showPanel(t);
+    });
   });
 }
 
@@ -266,6 +253,7 @@ function bindMenu(){
 
 function bindCurrency(){
   const sel = $("#currency");
+  if (!sel) return;
   state.currency = sel.value || "TRY";
   sel.addEventListener("change", () => {
     state.currency = sel.value || "TRY";
@@ -275,23 +263,31 @@ function bindCurrency(){
 
 /* ---------- KDV ---------- */
 function bindKdv(){
-  $("#netToBrut").addEventListener("click", () => {
-    const rate = parseSmartNumber($("#kdvRate").value) / 100;
+  on("#netToBrut","click", () => {
+    const rateSel = $("#kdvRate");
+    const out = $("#kdvOut");
+    if (!rateSel || !out) return;
+
+    const rate = parseSmartNumber(rateSel.value) / 100;
     const base = evalExpr(state.expr);
-    if (!Number.isFinite(base)) return $("#kdvOut").textContent = "Ekrandaki sayı geçersiz.";
+    if (!Number.isFinite(base)) return out.textContent = "Ekrandaki sayı geçersiz.";
     const brut = base * (1 + rate);
-    $("#kdvOut").innerHTML =
+    out.innerHTML =
       `Net: <b>${formatMoney(base)}</b><br>` +
       `Brüt: <b>${formatMoney(brut)}</b><br>` +
       `KDV: <b>${formatMoney(brut - base)}</b>`;
   });
 
-  $("#brutToNet").addEventListener("click", () => {
-    const rate = parseSmartNumber($("#kdvRate").value) / 100;
+  on("#brutToNet","click", () => {
+    const rateSel = $("#kdvRate");
+    const out = $("#kdvOut");
+    if (!rateSel || !out) return;
+
+    const rate = parseSmartNumber(rateSel.value) / 100;
     const brut = evalExpr(state.expr);
-    if (!Number.isFinite(brut)) return $("#kdvOut").textContent = "Ekrandaki sayı geçersiz.";
+    if (!Number.isFinite(brut)) return out.textContent = "Ekrandaki sayı geçersiz.";
     const net = brut / (1 + rate);
-    $("#kdvOut").innerHTML =
+    out.innerHTML =
       `Brüt: <b>${formatMoney(brut)}</b><br>` +
       `Net: <b>${formatMoney(net)}</b><br>` +
       `KDV: <b>${formatMoney(brut - net)}</b>`;
@@ -300,101 +296,131 @@ function bindKdv(){
 
 /* ---------- Percent ---------- */
 function bindPercent(){
-  const getA = () => parseSmartNumber($("#baseA").value);
-  const getB = () => parseSmartNumber($("#percB").value);
+  const out = () => $("#percOut");
+  const getA = () => parseSmartNumber($("#baseA")?.value ?? "");
+  const getB = () => parseSmartNumber($("#percB")?.value ?? "");
 
-  $("#aOfB").addEventListener("click", () => {
+  on("#aOfB","click", () => {
     const A = getA(), B = getB();
-    if (!Number.isFinite(A) || !Number.isFinite(B)) return $("#percOut").textContent = "A ve B gir.";
+    const o = out(); if (!o) return;
+    if (!Number.isFinite(A) || !Number.isFinite(B)) return o.textContent = "A ve B gir.";
     const r = A * (B/100);
-    $("#percOut").innerHTML = `A'nın %B'si = <b>${formatMoney(r)}</b>`;
+    o.innerHTML = `A'nın %B'si = <b>${formatMoney(r)}</b>`;
   });
 
-  $("#aPlusB").addEventListener("click", () => {
+  on("#aPlusB","click", () => {
     const A = getA(), B = getB();
-    if (!Number.isFinite(A) || !Number.isFinite(B)) return $("#percOut").textContent = "A ve B gir.";
+    const o = out(); if (!o) return;
+    if (!Number.isFinite(A) || !Number.isFinite(B)) return o.textContent = "A ve B gir.";
     const r = A * (1 + B/100);
-    $("#percOut").innerHTML = `A + %B = <b>${formatMoney(r)}</b>`;
+    o.innerHTML = `A + %B = <b>${formatMoney(r)}</b>`;
   });
 
-  $("#aMinusB").addEventListener("click", () => {
+  on("#aMinusB","click", () => {
     const A = getA(), B = getB();
-    if (!Number.isFinite(A) || !Number.isFinite(B)) return $("#percOut").textContent = "A ve B gir.";
+    const o = out(); if (!o) return;
+    if (!Number.isFinite(A) || !Number.isFinite(B)) return o.textContent = "A ve B gir.";
     const r = A * (1 - B/100);
-    $("#percOut").innerHTML = `A - %B = <b>${formatMoney(r)}</b>`;
+    o.innerHTML = `A - %B = <b>${formatMoney(r)}</b>`;
   });
 }
 
 /* ---------- Profit ---------- */
 function bindProfit(){
-  $("#profitCalc").addEventListener("click", () => {
-    const cost = parseSmartNumber($("#cost").value);
-    const sell = parseSmartNumber($("#sell").value);
-    if (!Number.isFinite(cost) || !Number.isFinite(sell)) return $("#profitOut").textContent = "Maliyet ve satış gir.";
+  on("#profitCalc","click", () => {
+    const out = $("#profitOut");
+    const costEl = $("#cost");
+    const sellEl = $("#sell");
+    if (!out || !costEl || !sellEl) return;
+
+    const cost = parseSmartNumber(costEl.value);
+    const sell = parseSmartNumber(sellEl.value);
+    if (!Number.isFinite(cost) || !Number.isFinite(sell)) return out.textContent = "Maliyet ve satış gir.";
 
     const profit = sell - cost;
     const profitPct = cost !== 0 ? (profit / cost) * 100 : NaN;
     const marginPct = sell !== 0 ? (profit / sell) * 100 : NaN;
 
-    $("#profitOut").innerHTML =
+    out.innerHTML =
       `Kâr/Zarar: <b>${formatMoney(profit)}</b><br>` +
       `Kâr% (maliyet): <b>${Number.isFinite(profitPct) ? formatNumber(profitPct,2) + "%" : "—"}</b><br>` +
       `Marj% (satış): <b>${Number.isFinite(marginPct) ? formatNumber(marginPct,2) + "%" : "—"}</b>`;
   });
 
-  $("#swap").addEventListener("click", () => {
-    const a = $("#cost").value;
-    $("#cost").value = $("#sell").value;
-    $("#sell").value = a;
+  on("#swap","click", () => {
+    const costEl = $("#cost");
+    const sellEl = $("#sell");
+    if (!costEl || !sellEl) return;
+    const a = costEl.value;
+    costEl.value = sellEl.value;
+    sellEl.value = a;
   });
 }
 
 /* ---------- FX ---------- */
 function bindFx(){
-  $("#fxUseUSDTRY").addEventListener("click", () => $("#fxRate").value = $("#fxRate").value || "35,50");
-  $("#fxUseEURTRY").addEventListener("click", () => $("#fxRate").value = $("#fxRate").value || "38,50");
+  on("#fxUseUSDTRY","click", () => {
+    const r = $("#fxRate"); if (!r) return;
+    r.value = r.value || "35,50";
+  });
+  on("#fxUseEURTRY","click", () => {
+    const r = $("#fxRate"); if (!r) return;
+    r.value = r.value || "38,50";
+  });
 
-  $("#fxConvert").addEventListener("click", () => {
-    const rate = parseSmartNumber($("#fxRate").value);
-    const amt  = parseSmartNumber($("#fxAmount").value);
-    const from = $("#fxFrom").value;
-    const to   = $("#fxTo").value;
+  on("#fxConvert","click", () => {
+    const out = $("#fxOut");
+    const rateEl = $("#fxRate");
+    const amtEl = $("#fxAmount");
+    const fromEl = $("#fxFrom");
+    const toEl = $("#fxTo");
+    if (!out || !rateEl || !amtEl || !fromEl || !toEl) return;
 
-    if (!Number.isFinite(rate) || rate <= 0) return $("#fxOut").textContent = "Kur geçersiz.";
-    if (!Number.isFinite(amt)) return $("#fxOut").textContent = "Tutar geçersiz.";
+    const rate = parseSmartNumber(rateEl.value);
+    const amt  = parseSmartNumber(amtEl.value);
+    const from = fromEl.value;
+    const to   = toEl.value;
 
-    // rate = 1 USD/EUR = ? TRY
-    let out = NaN;
+    if (!Number.isFinite(rate) || rate <= 0) return out.textContent = "Kur geçersiz.";
+    if (!Number.isFinite(amt)) return out.textContent = "Tutar geçersiz.";
 
-    const isBase = (c) => (c === "USD" || c === "EUR"); // biz rate'i base->TRY kabul ediyoruz
-    // Basit mantık: USD->TRY veya EUR->TRY dönüşümleri için rate kullan
-    if (from === "TRY" && isBase(to)) out = amt / rate;
-    else if (isBase(from) && to === "TRY") out = amt * rate;
-    else if (isBase(from) && isBase(to)) out = amt; // USD->EUR gibi için burada oran yok; aynı bırak
-    else if (from === "TRY" && to === "TRY") out = amt;
+    let converted = NaN;
+    const isBase = (c) => (c === "USD" || c === "EUR");
 
-    if (!Number.isFinite(out)) return $("#fxOut").textContent = "Bu dönüşüm için oran yok (şimdilik).";
+    if (from === "TRY" && isBase(to)) converted = amt / rate;
+    else if (isBase(from) && to === "TRY") converted = amt * rate;
+    else if (from === "TRY" && to === "TRY") converted = amt;
+    else if (isBase(from) && isBase(to)) converted = amt; // oran yok
 
-    $("#fxOut").innerHTML = `${formatNumber(amt,2)} ${from} → <b>${formatNumber(out,2)} ${to}</b>`;
+    if (!Number.isFinite(converted)) return out.textContent = "Bu dönüşüm için oran yok (şimdilik).";
+    out.innerHTML = `${formatNumber(amt,2)} ${from} → <b>${formatNumber(converted,2)} ${to}</b>`;
   });
 }
 
 /* ---------- Export ---------- */
 function bindExport(){
+  const outEl = () => $("#expOut");
+
   function calcExport(){
-    const incoterm = $("#incoterm").value;
-    const cur = $("#expCur").value;
+    const out = outEl(); if (!out) return;
 
-    const goods = parseSmartNumber($("#goodsValue").value) || 0;
-    const freight = parseSmartNumber($("#freight").value) || 0;
-    const ins = parseSmartNumber($("#insurance").value) || 0;
+    const incotermEl = $("#incoterm");
+    const curEl = $("#expCur");
+    if (!incotermEl || !curEl) return;
 
-    const inland = parseSmartNumber($("#inland").value) || 0;
-    const port = parseSmartNumber($("#portFees").value) || 0;
-    const commPct = parseSmartNumber($("#commissionPct").value) || 0;
+    const incoterm = incotermEl.value;
+    const cur = curEl.value;
 
-    const qty = parseSmartNumber($("#qty").value);
-    const unitPrice = parseSmartNumber($("#unitPrice").value);
+    const goods = parseSmartNumber($("#goodsValue")?.value ?? "") || 0;
+    const freight = parseSmartNumber($("#freight")?.value ?? "") || 0;
+    const ins = parseSmartNumber($("#insurance")?.value ?? "") || 0;
+
+    const inland = parseSmartNumber($("#inland")?.value ?? "") || 0;
+    const port = parseSmartNumber($("#portFees")?.value ?? "") || 0;
+    const commPct = parseSmartNumber($("#commissionPct")?.value ?? "") || 0;
+
+    const qty = parseSmartNumber($("#qty")?.value ?? "");
+    const unitPrice = parseSmartNumber($("#unitPrice")?.value ?? "");
 
     const commission = goods * (commPct/100);
     const FOB = goods + inland + port + commission;
@@ -405,47 +431,50 @@ function bindExport(){
     if (incoterm === "FOB") base = FOB;
     else if (incoterm === "CFR") base = CFR;
     else if (incoterm === "CIF") base = CIF;
-    else base = goods; // EXW approx
+    else base = goods;
 
     const unitCost = Number.isFinite(qty) && qty > 0 ? (base / qty) : NaN;
-    const unitSale = Number.isFinite(qty) && qty > 0 && Number.isFinite(unitPrice) ? (unitPrice) : NaN;
     const totalSale = Number.isFinite(qty) && qty > 0 && Number.isFinite(unitPrice) ? (unitPrice * qty) : NaN;
 
     const f = (n) => (Number.isFinite(n) ? formatNumber(n,2) : "—");
 
-    $("#expOut").innerHTML =
+    out.innerHTML =
       `Para birimi: <b>${cur}</b><br>` +
       `Komisyon: <b>${f(commission)}</b><br>` +
       `FOB: <b>${f(FOB)}</b> • CFR: <b>${f(CFR)}</b> • CIF: <b>${f(CIF)}</b><br>` +
       `${incoterm} Toplam: <b>${f(base)}</b><br>` +
       `Birim maliyet: <b>${Number.isFinite(unitCost) ? f(unitCost) : "—"}</b><br>` +
-      `Birim satış: <b>${Number.isFinite(unitSale) ? f(unitSale) : "—"}</b> • Toplam satış: <b>${Number.isFinite(totalSale) ? f(totalSale) : "—"}</b>`;
+      `Toplam satış: <b>${Number.isFinite(totalSale) ? f(totalSale) : "—"}</b>`;
   }
 
-  $("#expCalc").addEventListener("click", calcExport);
+  on("#expCalc","click", calcExport);
 
-  $("#priceWithProfit").addEventListener("click", () => {
-    // önce maliyeti hesapla
-    const goods = parseSmartNumber($("#goodsValue").value) || 0;
-    const freight = parseSmartNumber($("#freight").value) || 0;
-    const ins = parseSmartNumber($("#insurance").value) || 0;
-    const inland = parseSmartNumber($("#inland").value) || 0;
-    const port = parseSmartNumber($("#portFees").value) || 0;
-    const commPct = parseSmartNumber($("#commissionPct").value) || 0;
+  on("#priceWithProfit","click", () => {
+    const out = outEl(); if (!out) return;
+    const baseSelEl = $("#profitBase");
+    const profitEl = $("#targetProfitPct");
+    if (!baseSelEl || !profitEl) return;
+
+    const goods = parseSmartNumber($("#goodsValue")?.value ?? "") || 0;
+    const freight = parseSmartNumber($("#freight")?.value ?? "") || 0;
+    const ins = parseSmartNumber($("#insurance")?.value ?? "") || 0;
+    const inland = parseSmartNumber($("#inland")?.value ?? "") || 0;
+    const port = parseSmartNumber($("#portFees")?.value ?? "") || 0;
+    const commPct = parseSmartNumber($("#commissionPct")?.value ?? "") || 0;
 
     const commission = goods * (commPct/100);
     const FOB = goods + inland + port + commission;
     const CIF = (FOB + freight) + ins;
 
-    const baseSel = $("#profitBase").value; // FOB or CIF
-    const profitPct = parseSmartNumber($("#targetProfitPct").value);
+    const baseSel = baseSelEl.value;
+    const profitPct = parseSmartNumber(profitEl.value);
 
-    if (!Number.isFinite(profitPct)) return $("#expOut").textContent = "Hedef kâr % gir.";
+    if (!Number.isFinite(profitPct)) return out.textContent = "Hedef kâr % gir.";
 
     const base = baseSel === "CIF" ? CIF : FOB;
     const sale = base * (1 + profitPct/100);
 
-    $("#expOut").innerHTML =
+    out.innerHTML =
       `Baz: <b>${baseSel}</b><br>` +
       `Baz tutar: <b>${formatNumber(base,2)}</b><br>` +
       `Hedef kâr: <b>${formatNumber(profitPct,2)}%</b><br>` +
@@ -455,12 +484,17 @@ function bindExport(){
 
 /* ---------- Raise ---------- */
 function bindRaise(){
-  $("#raiseCalc").addEventListener("click", () => {
-    const oldS = parseSmartNumber($("#oldSalary").value);
-    const newS = parseSmartNumber($("#newSalary").value);
+  on("#raiseCalc","click", () => {
+    const out = $("#raiseOut");
+    const oldEl = $("#oldSalary");
+    const newEl = $("#newSalary");
+    if (!out || !oldEl || !newEl) return;
+
+    const oldS = parseSmartNumber(oldEl.value);
+    const newS = parseSmartNumber(newEl.value);
 
     if (!Number.isFinite(oldS) || !Number.isFinite(newS) || oldS <= 0){
-      return $("#raiseOut").textContent = "Mevcut ve yeni maaş gir (mevcut > 0).";
+      return out.textContent = "Mevcut ve yeni maaş gir (mevcut > 0).";
     }
 
     const diff = newS - oldS;
@@ -472,7 +506,7 @@ function bindRaise(){
     else if (pct >= 30) msg = "Personel mutlu, enflasyon düşünsün";
     else if (pct >= 20) msg = "Ağanın Eli tutulmaz";
 
-    $("#raiseOut").innerHTML =
+    out.innerHTML =
       `Artış: <b>${formatMoney(diff)}</b><br>` +
       `Zam oranı: <b>${formatNumber(pct,2)}%</b><br>` +
       `<b>${msg}</b>`;
@@ -481,12 +515,13 @@ function bindRaise(){
 
 /* ---------- Comments (Firebase) ---------- */
 async function initComments(){
-  // firebase-comments.js içinden init çağırmayı dener
   const statusEl = $("#cStatus");
   const listEl = $("#cList");
   const nameEl = $("#cName");
   const textEl = $("#cText");
   const sendBtn = $("#cSend");
+
+  if (!statusEl || !listEl || !nameEl || !textEl || !sendBtn) return;
 
   try{
     const mod = await import("./firebase-comments.js");
@@ -498,7 +533,6 @@ async function initComments(){
     // ignore
   }
 
-  // fallback (firebase yoksa)
   statusEl.textContent = "Firebase bağlı değil (firebase-comments.js ayarla).";
   listEl.textContent = "—";
   sendBtn.addEventListener("click", () => {
@@ -509,8 +543,8 @@ async function initComments(){
 /* ---------- Keyboard ---------- */
 function bindKeyboard(){
   window.addEventListener("keydown", (e) => {
-    const isCalcOpen = $("#panel-calc").classList.contains("active");
-    if (!isCalcOpen) return;
+    const calcPanel = $("#panel-calc");
+    if (!calcPanel || !calcPanel.classList.contains("active")) return;
 
     if (e.key === "Enter"){ e.preventDefault(); calcEquals(); }
     else if (e.key === "Backspace"){ e.preventDefault(); calcBackspace(); }
@@ -523,7 +557,10 @@ function bindKeyboard(){
 
 /* ---------- Grid click ---------- */
 function bindCalcGrid(){
-  $("#grid").addEventListener("click", (e) => {
+  const grid = $("#grid");
+  if (!grid) return;
+
+  grid.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
 
@@ -535,7 +572,6 @@ function bindCalcGrid(){
     if (action === "equals") return calcEquals();
 
     if (value){
-      // normalize display operators to internal
       if (value === "×") return calcInputToken("*");
       if (value === "÷") return calcInputToken("/");
       if (value === "−") return calcInputToken("-");
@@ -554,12 +590,10 @@ function boot(){
   bindMenu();
   bindCurrency();
 
-  // calc
   bindCalcGrid();
   bindKeyboard();
   calcClear();
 
-  // modules
   bindKdv();
   bindPercent();
   bindProfit();
@@ -567,10 +601,8 @@ function boot(){
   bindExport();
   bindRaise();
 
-  // comments
   initComments();
 
-  // start
   splashThenHome();
 }
 

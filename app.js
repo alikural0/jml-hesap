@@ -1,5 +1,4 @@
 (() => {
-  // ---------- helpers ----------
   const $ = (id) => document.getElementById(id);
 
   const state = {
@@ -7,26 +6,24 @@
     currency: "TRY",
     expr: "0",
     fxUSDTRY: 35.50,
-    fxEURTRY: 38.50,
+    fxEURTRY: 38.50
   };
 
-  function isLikelyTR(s){ return (s.includes(",") && !s.includes(".")) || /,\d{1,2}$/.test(s); }
-
+  // ---------- number helpers ----------
+  function isLikelyTR(s){
+    return (s.includes(",") && !s.includes(".")) || /,\d{1,2}$/.test(s);
+  }
   function parseNumber(raw){
-    if(raw == null) return NaN;
-    let s = String(raw).trim();
+    let s = String(raw ?? "").trim();
     if(!s) return NaN;
     s = s.replace(/\s/g, "");
 
-    // if both separators exist, decide by last separator
     const lastComma = s.lastIndexOf(",");
     const lastDot = s.lastIndexOf(".");
     if(lastComma !== -1 && lastDot !== -1){
       if(lastComma > lastDot){
-        // 1.234,56 -> TR
         s = s.replace(/\./g, "").replace(",", ".");
       }else{
-        // 1,234.56 -> US
         s = s.replace(/,/g, "");
       }
       return Number(s);
@@ -36,17 +33,13 @@
       s = s.replace(/\./g, "").replace(",", ".");
       return Number(s);
     }
-
-    // US-ish
     s = s.replace(/,/g, "");
     return Number(s);
   }
 
   function fmt(n){
     if(!Number.isFinite(n)) return "—";
-    const opts = { maximumFractionDigits: 2 };
-    const locale = "tr-TR";
-    return new Intl.NumberFormat(locale, opts).format(n);
+    return new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2 }).format(n);
   }
 
   function money(n){
@@ -54,7 +47,22 @@
     return `${sym} ${fmt(n)}`;
   }
 
-  // ---------- menu / tab ----------
+  // ---------- tabs ----------
+  function switchTab(tab){
+    state.tab = tab;
+
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    const panel = $(`panel-${tab}`);
+    if(panel) panel.classList.add("active");
+
+    // menu highlight
+    const menu = $("menu");
+    menu?.querySelectorAll("button[data-tab]")?.forEach(b => {
+      b.classList.toggle("active", b.dataset.tab === tab);
+    });
+  }
+
+  // ---------- menu (KESİN ÇALIŞIR) ----------
   const menuBtn = $("menuBtn");
   const menu = $("menu");
   const menuBackdrop = $("menuBackdrop");
@@ -67,33 +75,25 @@
     menu.classList.remove("open");
     menuBackdrop.classList.remove("open");
   }
-  menuBtn?.addEventListener("click", () => {
+
+  menuBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if(menu.classList.contains("open")) closeMenu();
     else openMenu();
   });
+
   menuBackdrop?.addEventListener("click", closeMenu);
+
   document.addEventListener("keydown", (e) => {
     if(e.key === "Escape") closeMenu();
   });
 
-  function switchTab(tab){
-    state.tab = tab;
-
-    // panels
-    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-    const panel = $(`panel-${tab}`);
-    if(panel) panel.classList.add("active");
-
-    // menu active
-    menu?.querySelectorAll("button[data-tab]").forEach(b => {
-      b.classList.toggle("active", b.dataset.tab === tab);
-    });
-
-    closeMenu();
-  }
-
   menu?.querySelectorAll("button[data-tab]")?.forEach(btn => {
-    btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    btn.addEventListener("click", () => {
+      closeMenu();
+      switchTab(btn.dataset.tab);
+    });
   });
 
   // ---------- currency ----------
@@ -108,18 +108,6 @@
   const grid = $("grid");
   const miniInfo = $("miniInfo");
 
-  function setScreenText(text){
-    if(!screen) return;
-    screen.value = text;
-  }
-
-  function updateMiniInfo(){
-    if(!miniInfo) return;
-    const n = safeEval(state.expr);
-    if(Number.isFinite(n)) miniInfo.textContent = money(n);
-    else miniInfo.textContent = "—";
-  }
-
   function safeEval(expr){
     try{
       const s = expr
@@ -127,52 +115,54 @@
         .replace(/÷/g, "/")
         .replace(/−/g, "-")
         .replace(/[^\d+\-*/().%]/g, "");
-
       if(!s) return NaN;
       // eslint-disable-next-line no-new-func
-      const val = Function(`"use strict"; return (${s});`)();
-      return Number(val);
+      return Number(Function(`"use strict"; return (${s});`)());
     }catch{
       return NaN;
     }
   }
 
-  function pushValue(v){
-    if(state.expr === "0" && /[0-9.]/.test(v)) state.expr = v === "." ? "0." : v;
-    else state.expr += v;
-    setScreenText(prettyExpr(state.expr));
-    updateMiniInfo();
-  }
-
   function prettyExpr(expr){
-    // show last number nicely with thousands separators (best-effort)
     const parts = expr.split(/([+\-*/()%])/);
     for(let i=0;i<parts.length;i++){
       const p = parts[i];
-      if(!p) continue;
       if(/^[0-9.]+$/.test(p) && p !== "."){
         const num = Number(p);
         if(Number.isFinite(num)){
-          // keep decimals as typed: if endswith '.', keep
-          if(p.endsWith(".")) parts[i] = fmt(num) + ".";
-          else parts[i] = fmt(num);
+          parts[i] = p.endsWith(".") ? (fmt(num) + ".") : fmt(num);
         }
       }
     }
-    return parts.join("")
-      .replace(/\*/g, "×")
-      .replace(/\//g, "÷");
+    return parts.join("").replace(/\*/g,"×").replace(/\//g,"÷");
+  }
+
+  function setScreen(text){
+    if(screen) screen.value = text;
+  }
+
+  function updateMiniInfo(){
+    if(!miniInfo) return;
+    const n = safeEval(state.expr);
+    miniInfo.textContent = Number.isFinite(n) ? money(n) : "—";
+  }
+
+  function pushValue(v){
+    if(state.expr === "0" && /[0-9.]/.test(v)) state.expr = (v === ".") ? "0." : v;
+    else state.expr += v;
+    setScreen(prettyExpr(state.expr));
+    updateMiniInfo();
   }
 
   function backspace(){
-    state.expr = state.expr.length <= 1 ? "0" : state.expr.slice(0, -1);
-    setScreenText(prettyExpr(state.expr));
+    state.expr = state.expr.length <= 1 ? "0" : state.expr.slice(0,-1);
+    setScreen(prettyExpr(state.expr));
     updateMiniInfo();
   }
 
   function clearAll(){
     state.expr = "0";
-    setScreenText("0");
+    setScreen("0");
     updateMiniInfo();
   }
 
@@ -180,12 +170,12 @@
     const n = safeEval(state.expr);
     if(Number.isFinite(n)){
       state.expr = String(n);
-      setScreenText(fmt(n));
+      setScreen(fmt(n));
       updateMiniInfo();
     }else{
-      setScreenText("Hata");
+      setScreen("Hata");
       setTimeout(() => {
-        setScreenText(prettyExpr(state.expr));
+        setScreen(prettyExpr(state.expr));
         updateMiniInfo();
       }, 650);
     }
@@ -220,6 +210,7 @@
   // ---------- KDV ----------
   const kdvRate = $("kdvRate");
   const kdvOut = $("kdvOut");
+
   $("netToBrut")?.addEventListener("click", () => {
     const rate = parseNumber(kdvRate?.value || "18") / 100;
     const net = safeEval(state.expr);
@@ -227,6 +218,7 @@
     const kdv = brut - net;
     kdvOut.textContent = `Net: ${money(net)} → Brüt: ${money(brut)} (KDV: ${money(kdv)})`;
   });
+
   $("brutToNet")?.addEventListener("click", () => {
     const rate = parseNumber(kdvRate?.value || "18") / 100;
     const brut = safeEval(state.expr);
@@ -248,18 +240,17 @@
 
   $("aOfB")?.addEventListener("click", () => {
     const {A,B} = getAB();
-    const res = A * (B/100);
-    percOut.textContent = `${fmt(A)}'nın %${fmt(B)}'si = ${money(res)}`;
+    percOut.textContent = `${fmt(A)}'nın %${fmt(B)}'si = ${money(A*(B/100))}`;
   });
+
   $("aPlusB")?.addEventListener("click", () => {
     const {A,B} = getAB();
-    const res = A * (1 + B/100);
-    percOut.textContent = `${fmt(A)} + %${fmt(B)} = ${money(res)}`;
+    percOut.textContent = `${fmt(A)} + %${fmt(B)} = ${money(A*(1+B/100))}`;
   });
+
   $("aMinusB")?.addEventListener("click", () => {
     const {A,B} = getAB();
-    const res = A * (1 - B/100);
-    percOut.textContent = `${fmt(A)} - %${fmt(B)} = ${money(res)}`;
+    percOut.textContent = `${fmt(A)} - %${fmt(B)} = ${money(A*(1-B/100))}`;
   });
 
   // ---------- Profit/Loss ----------
@@ -268,7 +259,9 @@
   const profitOut = $("profitOut");
 
   $("swap")?.addEventListener("click", () => {
-    const a = cost.value; cost.value = sell.value; sell.value = a;
+    const a = cost.value;
+    cost.value = sell.value;
+    sell.value = a;
   });
 
   $("profitCalc")?.addEventListener("click", () => {
@@ -280,8 +273,8 @@
 
     profitOut.innerHTML =
       `Kâr/Zarar: <b>${money(p)}</b><br>` +
-      `Kâr% (maliyet): <b>${Number.isFinite(profitPct) ? fmt(profitPct) + "%" : "—"}</b><br>` +
-      `Marj% (satış): <b>${Number.isFinite(marginPct) ? fmt(marginPct) + "%" : "—"}</b>`;
+      `Kâr% (maliyet): <b>${Number.isFinite(profitPct) ? fmt(profitPct)+"%" : "—"}</b><br>` +
+      `Marj% (satış): <b>${Number.isFinite(marginPct) ? fmt(marginPct)+"%" : "—"}</b>`;
   });
 
   // ---------- FX ----------
@@ -291,8 +284,8 @@
   const fxTo = $("fxTo");
   const fxOut = $("fxOut");
 
-  $("fxUseUSDTRY")?.addEventListener("click", () => { if(fxRate) fxRate.value = String(state.fxUSDTRY).replace(".", ","); });
-  $("fxUseEURTRY")?.addEventListener("click", () => { if(fxRate) fxRate.value = String(state.fxEURTRY).replace(".", ","); });
+  $("fxUseUSDTRY")?.addEventListener("click", () => { fxRate.value = String(state.fxUSDTRY).replace(".", ","); });
+  $("fxUseEURTRY")?.addEventListener("click", () => { fxRate.value = String(state.fxEURTRY).replace(".", ","); });
 
   $("fxConvert")?.addEventListener("click", () => {
     const rate = parseNumber(fxRate?.value || "");
@@ -305,89 +298,64 @@
       return;
     }
 
-    // rate assumed: 1 USD/EUR = rate TRY (when converting between TRY and foreign)
-    function toTRY(amount, cur){
-      if(cur === "TRY") return amount;
-      return amount * rate;
-    }
-    function fromTRY(amountTRY, cur){
-      if(cur === "TRY") return amountTRY;
-      return amountTRY / rate;
-    }
+    const toTRY = (a, c) => c === "TRY" ? a : a * rate;
+    const fromTRY = (a, c) => c === "TRY" ? a : a / rate;
 
     let res;
     if(from === to) res = amt;
     else if(to === "TRY") res = toTRY(amt, from);
     else if(from === "TRY") res = fromTRY(amt, to);
-    else{
-      // foreign -> TRY -> foreign
-      const t = toTRY(amt, from);
-      res = fromTRY(t, to);
-    }
+    else res = fromTRY(toTRY(amt, from), to);
 
     fxOut.textContent = `${fmt(amt)} ${from} → ${fmt(res)} ${to}`;
   });
 
   // ---------- Export ----------
-  const expOut = $("expOut");
-
   function expRead(){
-    const incoterm = $("incoterm")?.value || "FOB";
-    const cur = $("expCur")?.value || "USD";
-
-    const goods = parseNumber($("goodsValue")?.value || "0");
-    const freight = parseNumber($("freight")?.value || "0");
-    const insurance = parseNumber($("insurance")?.value || "0");
-    const inland = parseNumber($("inland")?.value || "0");
-    const port = parseNumber($("portFees")?.value || "0");
-    const commPct = parseNumber($("commissionPct")?.value || "0");
-
-    const qty = parseNumber($("qty")?.value || "0");
-    const unitPrice = parseNumber($("unitPrice")?.value || "0");
-
-    const targetPct = parseNumber($("targetProfitPct")?.value || "0");
-    const profitBase = $("profitBase")?.value || "FOB";
-
-    return {incoterm, cur, goods, freight, insurance, inland, port, commPct, qty, unitPrice, targetPct, profitBase};
+    return {
+      incoterm: $("incoterm")?.value || "FOB",
+      cur: $("expCur")?.value || "USD",
+      goods: parseNumber($("goodsValue")?.value || "0"),
+      freight: parseNumber($("freight")?.value || "0"),
+      insurance: parseNumber($("insurance")?.value || "0"),
+      inland: parseNumber($("inland")?.value || "0"),
+      port: parseNumber($("portFees")?.value || "0"),
+      commPct: parseNumber($("commissionPct")?.value || "0"),
+      qty: parseNumber($("qty")?.value || "0"),
+      targetPct: parseNumber($("targetProfitPct")?.value || "0"),
+      profitBase: $("profitBase")?.value || "FOB",
+    };
   }
-
-  function expMoney(n, cur){
-    if(!Number.isFinite(n)) return "—";
-    return `${cur} ${fmt(n)}`;
-  }
+  const expOut = $("expOut");
+  const expMoney = (n, cur) => Number.isFinite(n) ? `${cur} ${fmt(n)}` : "—";
 
   $("expCalc")?.addEventListener("click", () => {
     const x = expRead();
-
     const FOB = x.goods + x.inland + x.port;
     const CFR = FOB + x.freight;
     const CIF = CFR + x.insurance;
 
     const commBase = x.incoterm === "CIF" ? CIF : (x.incoterm === "CFR" ? CFR : FOB);
     const commission = commBase * (x.commPct/100);
-
     const total = commBase + commission;
-
     const perUnit = x.qty > 0 ? total / x.qty : NaN;
 
     expOut.innerHTML =
       `FOB: <b>${expMoney(FOB, x.cur)}</b><br>` +
       `CFR: <b>${expMoney(CFR, x.cur)}</b> • CIF: <b>${expMoney(CIF, x.cur)}</b><br>` +
       `Komisyon: <b>${expMoney(commission, x.cur)}</b> (baz: ${x.incoterm})<br>` +
-      `Toplam (baz+komisyon): <b>${expMoney(total, x.cur)}</b><br>` +
+      `Toplam: <b>${expMoney(total, x.cur)}</b><br>` +
       `Birim maliyet: <b>${Number.isFinite(perUnit) ? expMoney(perUnit, x.cur) : "—"}</b>`;
   });
 
   $("priceWithProfit")?.addEventListener("click", () => {
     const x = expRead();
-
     const FOB = x.goods + x.inland + x.port;
     const CFR = FOB + x.freight;
     const CIF = CFR + x.insurance;
 
     const base = (x.profitBase === "CIF") ? CIF : FOB;
     const target = base * (1 + (x.targetPct/100));
-
     const perUnit = x.qty > 0 ? target / x.qty : NaN;
 
     expOut.innerHTML =
@@ -397,18 +365,17 @@
       `Birim hedef satış: <b>${Number.isFinite(perUnit) ? expMoney(perUnit, x.cur) : "—"}</b>`;
   });
 
-  // ---------- Raise calculator ----------
+  // ---------- Raise ----------
   const raiseOut = $("raiseOut");
   $("raiseCalc")?.addEventListener("click", () => {
     const oldS = parseNumber($("oldSalary")?.value || "");
     const newS = parseNumber($("newSalary")?.value || "");
-
     if(!Number.isFinite(oldS) || oldS <= 0 || !Number.isFinite(newS) || newS <= 0){
       raiseOut.textContent = "Geçerli maaşları gir.";
       return;
     }
-
     const pct = ((newS - oldS) / oldS) * 100;
+
     let msg = "🙂 Zam var ama sessiz sevinç";
     if(pct >= 50) msg = "💸 Moris bey iyi misiniz?";
     else if(pct >= 40) msg = "🔥 Personel çıldırdı ofisten çıkmıyor";
@@ -419,9 +386,9 @@
   });
 
   // ---------- init ----------
-  setScreenText("0");
-  updateMiniInfo();
   switchTab("calc");
+  setScreen("0");
+  updateMiniInfo();
 
   // ---------- Service Worker ----------
   if("serviceWorker" in navigator){

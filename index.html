@@ -340,18 +340,22 @@ button.key:active, .btn:active{
         <div class="chip">Mobil: Dokun • Enter: =</div>
       </div>
     </div>
+    
+<div class="card">
 
-    <div class="card">
-      <div class="ink" id="tabInk"></div>
-        <button class="tab active" data-tab="calc" type="button">Hesap</button>
-        <button class="tab" data-tab="kdv" type="button">KDV</button>
-        <button class="tab" data-tab="pct" type="button">Yüzde</button>
-        <button class="tab" data-tab="profit" type="button">Kar/Zarar</button>
-        <button class="tab" data-tab="fx" type="button">Kur</button>
-        <button class="tab" data-tab="export" type="button">İhracat</button>
-        <button class="tab" data-tab="comments" type="button">Yorumlar</button>
-        <div class="ink" id="tabInk"></div>
-      </div>
+  <!-- SEKME BAR -->
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="calc" type="button">Hesap</button>
+    <button class="tab" data-tab="kdv" type="button">KDV</button>
+    <button class="tab" data-tab="pct" type="button">Yüzde</button>
+    <button class="tab" data-tab="profit" type="button">Kar/Zarar</button>
+    <button class="tab" data-tab="fx" type="button">Kur</button>
+    <button class="tab" data-tab="export" type="button">İhracat</button>
+    <button class="tab" data-tab="comments" type="button">Yorumlar</button>
+
+    <div class="ink" id="tabInk"></div>
+  </div>
+</div>
 
       <!-- HESAP -->
       <div class="panel active" id="panel-calc">
@@ -534,4 +538,5 @@ button.key:active, .btn:active{
   <script type="module" src="./firebase-comments.js"></script>
 </body>
 </html>
+
 

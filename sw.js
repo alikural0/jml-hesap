@@ -1,4 +1,4 @@
-const CACHE = "jml-v4.1";
+const CACHE = "jml-v5.0";
 const ASSETS = [
   "./",
   "./index.html",
@@ -12,7 +12,9 @@ const ASSETS = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE)
+      .then((cache) => cache.addAll(ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -29,10 +31,11 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Only handle same-origin
   if (url.origin !== self.location.origin) return;
 
-  const isHTML = req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html");
+  const isHTML =
+    req.mode === "navigate" ||
+    (req.headers.get("accept") || "").includes("text/html");
 
   if (isHTML) {
     event.respondWith(
@@ -53,5 +56,3 @@ self.addEventListener("fetch", (event) => {
     }))
   );
 });
-
-

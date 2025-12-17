@@ -57,6 +57,7 @@
       background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
       border:1px solid var(--stroke2);
       box-shadow:var(--shadow);
+      z-index: 120; 
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
@@ -124,14 +125,14 @@
       position:fixed; inset:0;
       background:rgba(0,0,0,.35);
       backdrop-filter: blur(2px);
-      z-index:50;
+      z-index:110;
     }
     .menuBackdrop.open{display:block}
 
     .menu{
-      position:absolute;
-      top:64px;
-      right:12px;
+      position:fixed;
+      top:90px; 
+      right:16px;
       width:250px;
       padding:10px;
       border-radius:18px;
@@ -141,7 +142,7 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       display:none;
-      z-index:60;
+      z-index:130;
     }
     .menu.open{display:block}
     .menu .mTitle{
@@ -526,3 +527,4 @@
   <script type="module" src="./firebase-comments.js"></script>
 </body>
 </html>
+

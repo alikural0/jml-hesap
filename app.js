@@ -1,4 +1,4 @@
-/* JML Hesap • V5.0
+/* JML Hesap • V5.2
    - Splash 2sn (splash.png)
    - Sonra Ana Panel (Home)
    - Home’dan tıklanınca panel geçişi
